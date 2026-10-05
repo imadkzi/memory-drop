@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum WeddingAdminRole {
+  OWNER
+  ADMIN
+}
+
+enum MediaType {
+  PHOTO
+  VIDEO
+}
+
+enum MediaStatus {
+  UPLOADING
+  READY
+  FAILED
+  DELETED
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions              Session[]
+  accounts              Account[]
+  ownedWeddings         Wedding[]              @relation("WeddingOwner")
+  weddingAdmins         WeddingAdmin[]
+  googleDriveConnections GoogleDriveConnection[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Wedding {
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  ownerId            String
+  owner              User     @relation("WeddingOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  driveFolderId      String?
+  driveConnectionId  String?
+  driveConnection    GoogleDriveConnection? @relation(fields: [driveConnectionId], references: [id], onDelete: SetNull)
+  uploadTokenHash       String
+  encryptedUploadToken  String
+  uploadEnabled         Boolean  @default(true)
+  maxPhotoSizeBytes  Int      @default(26214400)
+  maxVideoSizeBytes  Int      @default(1073741824)
+  eventDate          DateTime? @db.Date
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  admins WeddingAdmin[]
+  media  Media[]
+
+  @@index([ownerId])
+  @@index([uploadTokenHash])
+  @@map("wedding")
+}
+
+model WeddingAdmin {
+  id        String           @id @default(cuid())
+  weddingId String
+  wedding   Wedding          @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      WeddingAdminRole
+  createdAt DateTime         @default(now())
+
+  @@unique([weddingId, userId])
+  @@index([userId])
+  @@map("wedding_admin")
+}
+
+model Media {
+  id          String      @id @default(cuid())
+  weddingId   String
+  wedding     Wedding     @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  driveFileId String?
+  filename    String
+  mimeType    String
+  size        BigInt
+  mediaType   MediaType
+  status      MediaStatus @default(UPLOADING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([weddingId, status])
+  @@index([weddingId, mediaType])
+  @@map("media")
+}
+
+model GoogleDriveConnection {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  encryptedAccessToken  String
+  encryptedRefreshToken String
+  expiresAt             DateTime
+  rootFolderId          String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  weddings Wedding[]
+
+  @@index([userId])
+  @@map("google_drive_connection")
+}

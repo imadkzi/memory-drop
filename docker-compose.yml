@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: memory_drop
+      POSTGRES_PASSWORD: memory_drop
+      POSTGRES_DB: memory_drop
+    volumes:
+      - memory_drop_pg:/var/lib/postgresql/data
+
+volumes:
+  memory_drop_pg:
