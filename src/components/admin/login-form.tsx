@@ -105,6 +105,25 @@ export function LoginForm() {
         />
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
+      {mode === "register" && (
+        <p className="text-center font-sans text-sm leading-relaxed text-muted-foreground">
+          Creating an account means you agree to the{" "}
+          <Link
+            href="/terms"
+            className="font-medium text-bloom underline-offset-4 hover:underline"
+          >
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/privacy"
+            className="font-medium text-bloom underline-offset-4 hover:underline"
+          >
+            Privacy policy
+          </Link>
+          .
+        </p>
+      )}
       <Button
         type="submit"
         className="h-12 w-full bg-bloom text-base font-semibold text-white hover:bg-bloom/90"

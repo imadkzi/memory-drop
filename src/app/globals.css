@@ -174,16 +174,16 @@
 }
 
 .privacy-shell {
-  background: oklch(0.62 0.05 18);
+  background: oklch(0.45 0.05 18);
   color: oklch(0.98 0.01 50);
 }
 
 .privacy-wash {
   background:
-    radial-gradient(ellipse 60% 55% at 15% 30%, oklch(0.72 0.06 15 / 0.55), transparent 60%),
-    radial-gradient(ellipse 50% 50% at 88% 40%, oklch(0.78 0.05 80 / 0.4), transparent 55%),
-    radial-gradient(ellipse 45% 40% at 50% 85%, oklch(0.7 0.05 25 / 0.35), transparent 55%),
-    linear-gradient(165deg, oklch(0.58 0.055 16), oklch(0.66 0.045 22) 50%, oklch(0.56 0.05 18));
+    radial-gradient(ellipse 60% 55% at 15% 30%, oklch(0.55 0.05 16 / 0.4), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 88% 40%, oklch(0.58 0.04 80 / 0.25), transparent 55%),
+    radial-gradient(ellipse 45% 40% at 50% 85%, oklch(0.52 0.04 25 / 0.28), transparent 55%),
+    linear-gradient(165deg, oklch(0.46 0.05 16), oklch(0.5 0.045 20) 50%, oklch(0.44 0.05 18));
 }
 
 .light-wash {

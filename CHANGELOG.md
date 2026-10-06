@@ -64,3 +64,16 @@ First production-shaped MVP: private wedding collections, guest upload-only link
 ## Unreleased
 
 _Changes after 0.1.0 will be listed here until the next tagged release._
+
+### Added
+
+- Privacy policy (`/privacy`) and terms (`/terms`), last updated 6 October 2026, written to the product as built: guest upload-only links, files stored in the owner's Google Drive, account and session data held by Memory Drop
+- Shared legal layout with brand mark, privacy/terms navigation, and contact `hello@imadkazi.co.uk`
+- Signup states that creating an account accepts the terms and privacy policy
+- Guest upload screen links to the privacy policy and says files go to that wedding's collection
+- Marketing footer links to the idea, the flow, privacy, terms, and contact
+
+### Changed
+
+- Marketing homepage split out of a single page into sections: floral hero, story, four-step flow, phone upload mock, privacy polaroids, and get-started
+- Privacy band darkened so the guest-access copy reads on the rose wash

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -209,7 +210,14 @@ export function GuestUploadExperience({
               </span>
             </label>
             <p className="font-sans text-sm text-muted-foreground">
-              No account required.
+              No account required. Uploading means the files go to this
+              wedding&apos;s collection.{" "}
+              <Link
+                href="/privacy"
+                className="underline-offset-4 hover:text-ink hover:underline"
+              >
+                Privacy policy
+              </Link>
             </p>
           </div>
         )}

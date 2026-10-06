@@ -67,6 +67,7 @@ Work that should land before trusting the app with a real wedding day.
 
 ### Brand & marketing
 
+- [x] Privacy policy and terms, linked from the homepage, signup, and guest upload
 - [ ] Real photo assets pipeline for landing (licensed wedding photography)
 - [ ] Pricing / waitlist page if going commercial
 - [ ] SEO / OG images for marketing pages only (admin stays noindex)
