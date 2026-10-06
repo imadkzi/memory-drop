@@ -6,12 +6,12 @@ import { prisma } from "@/lib/db/prisma";
 
 type Props = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ type?: string; cursor?: string }>;
+  searchParams: Promise<{ type?: string }>;
 };
 
 export default async function WeddingMediaPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { type, cursor } = await searchParams;
+  const { type } = await searchParams;
   const session = await requireSession();
   const membership = await requireWeddingAccess(session.user.id, id);
   if (!membership) notFound();
@@ -32,9 +32,8 @@ export default async function WeddingMediaPage({ params, searchParams }: Props) 
       status: "READY",
       ...(mediaType ? { mediaType } : {}),
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     take: take + 1,
-    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
   });
 
   const hasMore = media.length > take;
@@ -102,6 +101,7 @@ export default async function WeddingMediaPage({ params, searchParams }: Props) 
 
       <div className="mt-6">
         <MediaGallery
+          key={mediaType ?? "all"}
           weddingId={id}
           items={serialized}
           nextCursor={nextCursor}

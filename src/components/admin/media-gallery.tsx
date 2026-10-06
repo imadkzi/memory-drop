@@ -161,8 +161,10 @@ export function MediaGallery({
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [selectMode, setSelectMode] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [visibleItems, setVisibleItems] = useState(items);
+  const [loadCursor, setLoadCursor] = useState(nextCursor);
   const [readyIds, setReadyIds] = useState<Set<string>>(() => new Set());
   const markReady = useCallback((id: string) => {
     setReadyIds((prev) => {
@@ -173,9 +175,35 @@ export function MediaGallery({
     });
   }, []);
 
-  useEffect(() => {
-    setVisibleItems(items);
-  }, [items]);
+  async function loadMore() {
+    if (!loadCursor || loadingMore) return;
+    setLoadingMore(true);
+    setMessage(null);
+    try {
+      const params = new URLSearchParams({ cursor: loadCursor });
+      if (type) params.set("type", type);
+      const res = await fetch(`/api/weddings/${weddingId}/media?${params}`);
+      const json = (await res.json()) as {
+        items?: Item[];
+        nextCursor?: string | null;
+        error?: string;
+      };
+      if (!res.ok) {
+        setMessage(json.error ?? "We couldn't load more memories.");
+        return;
+      }
+      const incoming = json.items ?? [];
+      setVisibleItems((prev) => {
+        const seen = new Set(prev.map((item) => item.id));
+        return [...prev, ...incoming.filter((item) => !seen.has(item.id))];
+      });
+      setLoadCursor(json.nextCursor ?? null);
+    } catch {
+      setMessage("We couldn't load more memories.");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   const checkedItems = useMemo(
     () => visibleItems.filter((item) => checked.has(item.id)),
@@ -522,22 +550,16 @@ export function MediaGallery({
         </div>
       )}
 
-      {nextCursor && (
+      {loadCursor && (
         <div className="mt-8 text-center">
           <Button
-            nativeButton={false}
-            render={
-              <a
-                href={`/admin/weddings/${weddingId}/media?${new URLSearchParams({
-                  ...(type ? { type } : {}),
-                  cursor: nextCursor,
-                }).toString()}`}
-              />
-            }
+            type="button"
             variant="outline"
+            disabled={loadingMore}
+            onClick={() => void loadMore()}
             className="h-11 border-ink/20 bg-transparent text-ink hover:bg-ink/5"
           >
-            Load more
+            {loadingMore ? "Loading…" : "Load more"}
           </Button>
         </div>
       )}
