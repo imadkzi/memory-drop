@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
       <div className="relative z-10 mb-8">
         <Link href="/" className="inline-flex">
           <Image
-            src="/logo-bloom.png"
+            src="/logo-bloom.webp"
             alt="MemoryDrop"
             width={280}
             height={50}

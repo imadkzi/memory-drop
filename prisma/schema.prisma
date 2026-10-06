@@ -24,6 +24,12 @@ enum MediaStatus {
   DELETED
 }
 
+enum AdminInviteStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+}
+
 model User {
   id            String    @id
   name          String
@@ -109,8 +115,9 @@ model Wedding {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  admins WeddingAdmin[]
-  media  Media[]
+  admins  WeddingAdmin[]
+  invites WeddingAdminInvite[]
+  media   Media[]
 
   @@index([ownerId])
   @@index([uploadTokenHash])
@@ -129,6 +136,25 @@ model WeddingAdmin {
   @@unique([weddingId, userId])
   @@index([userId])
   @@map("wedding_admin")
+}
+
+model WeddingAdminInvite {
+  id              String            @id @default(cuid())
+  weddingId       String
+  wedding         Wedding           @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  email           String
+  role            WeddingAdminRole  @default(ADMIN)
+  tokenHash       String            @unique
+  status          AdminInviteStatus @default(PENDING)
+  invitedByUserId String
+  expiresAt       DateTime
+  acceptedAt      DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([weddingId, status])
+  @@index([email])
+  @@map("wedding_admin_invite")
 }
 
 model Media {

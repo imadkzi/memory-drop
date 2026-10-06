@@ -229,6 +229,7 @@ export function MediaGallery({
 
   useEffect(() => {
     if (lightboxIndex === null) return;
+    const activeIndex = lightboxIndex;
 
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -238,7 +239,7 @@ export function MediaGallery({
       if (event.key === "ArrowLeft") goPrev();
       if (event.key === "ArrowRight") goNext();
       if (event.key === " ") {
-        const current = visibleItems[lightboxIndex];
+        const current = visibleItems[activeIndex];
         if (current?.mediaType === "PHOTO") {
           event.preventDefault();
           setPlaying((v) => !v);
@@ -299,8 +300,31 @@ export function MediaGallery({
   }
 
   async function downloadMany(targets: Item[]) {
-    for (const item of targets) {
-      await download(item);
+    if (!targets.length) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/weddings/${weddingId}/media/zip`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: targets.map((item) => item.id) }),
+      });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        setMessage(json.error ?? "We couldn't create the zip download.");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `memory-drop-${weddingId.slice(0, 8)}.zip`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setMessage("We couldn't create the zip download.");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -409,7 +433,11 @@ export function MediaGallery({
         <Button
           type="button"
           className="h-11 bg-bloom px-5 font-semibold text-white hover:bg-bloom/90"
-          disabled={!visibleItems.length || (selectMode && checkedItems.length === 0)}
+          disabled={
+            busy ||
+            !visibleItems.length ||
+            (selectMode && checkedItems.length === 0)
+          }
           onClick={() =>
             downloadMany(
               selectMode && checkedItems.length ? checkedItems : visibleItems,
@@ -417,9 +445,11 @@ export function MediaGallery({
           }
         >
           <Download className="size-4" />
-          {selectMode && checkedItems.length
-            ? `Download ${checkedItems.length}`
-            : "Download all"}
+          {busy
+            ? "Preparing zip…"
+            : selectMode && checkedItems.length
+              ? `Zip ${checkedItems.length}`
+              : "Download zip"}
         </Button>
       </div>
 
@@ -461,6 +491,7 @@ export function MediaGallery({
                     alt={item.filename}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                     loading="lazy"
+                    decoding="async"
                   />
                   {item.mediaType === "VIDEO" && (
                     <span className="absolute right-2 bottom-2 rounded bg-background/85 px-2 py-0.5 font-sans text-[10px]">

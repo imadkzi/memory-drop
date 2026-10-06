@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 export function BrandMark({
   className,
   priority = false,
-  src = "/logo-mark.png",
+  src = "/logo-mark.webp",
 }: {
   className?: string;
   priority?: boolean;
@@ -21,6 +21,7 @@ export function BrandMark({
         className,
       )}
       priority={priority}
+      quality={85}
     />
   );
 }

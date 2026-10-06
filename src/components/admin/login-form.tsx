@@ -8,6 +8,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, signUp } from "@/lib/auth/client";
 
+function authErrorMessage(
+  error: { message?: string | null; status?: number; statusText?: string },
+  mode: "login" | "register",
+) {
+  const status = error.status;
+  const message = error.message?.trim();
+
+  if (status === 429 || /too many/i.test(message ?? "")) {
+    return (
+      message ||
+      (mode === "login"
+        ? "Too many sign-in attempts. Please wait and try again."
+        : "Too many sign-up attempts from this network. Please wait and try again.")
+    );
+  }
+
+  if (message) return message;
+  return mode === "login"
+    ? "Invalid email or password."
+    : "We couldn't create your account.";
+}
+
 export function LoginForm() {
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -26,14 +48,14 @@ export function LoginForm() {
       if (mode === "register") {
         const result = await signUp.email({ name, email, password });
         if (result.error) {
-          setError(result.error.message ?? "We couldn't create your account.");
+          setError(authErrorMessage(result.error, "register"));
           setLoading(false);
           return;
         }
       } else {
         const result = await signIn.email({ email, password });
         if (result.error) {
-          setError(result.error.message ?? "Invalid email or password.");
+          setError(authErrorMessage(result.error, "login"));
           setLoading(false);
           return;
         }

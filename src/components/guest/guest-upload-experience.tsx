@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Film, Heart, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -10,8 +10,10 @@ import { cn } from "@/lib/utils";
 type UploadItem = {
   id: string;
   file: File;
+  previewUrl: string | null;
   status: "pending" | "uploading" | "done" | "error";
-  progress: number;
+  /** Bytes uploaded for this file (0…file.size). */
+  loaded: number;
   error?: string;
   mediaId?: string;
 };
@@ -20,37 +22,74 @@ type Props = {
   token: string;
   weddingName: string;
   uploadEnabled: boolean;
+  driveReady: boolean;
 };
+
+function isVideo(file: File) {
+  return file.type.startsWith("video/") || /\.(mp4|mov|m4v)$/i.test(file.name);
+}
+
+function isImagePreviewable(file: File) {
+  if (file.type.startsWith("image/")) {
+    return !/heic|heif/i.test(file.type) && !/\.(heic|heif)$/i.test(file.name);
+  }
+  return false;
+}
+
+function revokePreviews(items: UploadItem[]) {
+  for (const item of items) {
+    if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+  }
+}
 
 export function GuestUploadExperience({
   token,
   weddingName,
   uploadEnabled,
+  driveReady,
 }: Props) {
   const [items, setItems] = useState<UploadItem[]>([]);
   const [phase, setPhase] = useState<"idle" | "ready" | "uploading" | "done">(
     "idle",
   );
 
+  useEffect(() => {
+    return () => revokePreviews(items);
+    // Only revoke on unmount; selection changes revoke the previous set explicitly.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const selectedCount = items.length;
   const completedCount = items.filter((item) => item.status === "done").length;
+  const totalBytes = useMemo(
+    () => items.reduce((sum, item) => sum + item.file.size, 0),
+    [items],
+  );
+  const loadedBytes = useMemo(
+    () => items.reduce((sum, item) => sum + item.loaded, 0),
+    [items],
+  );
   const overallProgress = useMemo(() => {
-    if (!items.length) return 0;
-    return Math.round(
-      items.reduce((sum, item) => sum + item.progress, 0) / items.length,
-    );
-  }, [items]);
+    if (!totalBytes) return 0;
+    return Math.min(100, Math.round((loadedBytes / totalBytes) * 100));
+  }, [loadedBytes, totalBytes]);
 
   const onSelect = useCallback((files: FileList | null) => {
     if (!files?.length) return;
-    setItems(
-      Array.from(files).map((file) => ({
+    setItems((prev) => {
+      revokePreviews(prev);
+      return Array.from(files).map((file) => ({
         id: crypto.randomUUID(),
         file,
+        previewUrl: isImagePreviewable(file)
+          ? URL.createObjectURL(file)
+          : isVideo(file)
+            ? URL.createObjectURL(file)
+            : null,
         status: "pending" as const,
-        progress: 0,
-      })),
-    );
+        loaded: 0,
+      }));
+    });
     setPhase("ready");
   }, []);
 
@@ -58,7 +97,7 @@ export function GuestUploadExperience({
     setItems((prev) =>
       prev.map((row) =>
         row.id === item.id
-          ? { ...row, status: "uploading", progress: 5, error: undefined }
+          ? { ...row, status: "uploading", loaded: 0, error: undefined }
           : row,
       ),
     );
@@ -80,12 +119,9 @@ export function GuestUploadExperience({
 
       xhr.upload.onprogress = (event) => {
         if (!event.lengthComputable) return;
-        const progress = Math.max(
-          5,
-          Math.min(95, Math.round((event.loaded / event.total) * 100)),
-        );
+        const loaded = Math.min(event.loaded, item.file.size);
         setItems((prev) =>
-          prev.map((row) => (row.id === item.id ? { ...row, progress } : row)),
+          prev.map((row) => (row.id === item.id ? { ...row, loaded } : row)),
         );
       };
 
@@ -116,7 +152,12 @@ export function GuestUploadExperience({
     setItems((prev) =>
       prev.map((row) =>
         row.id === item.id
-          ? { ...row, status: "done", progress: 100, mediaId }
+          ? {
+              ...row,
+              status: "done",
+              loaded: row.file.size,
+              mediaId,
+            }
           : row,
       ),
     );
@@ -135,7 +176,7 @@ export function GuestUploadExperience({
         setItems((prev) =>
           prev.map((row) =>
             row.id === item.id
-              ? { ...row, status: "error", error: message, progress: 0 }
+              ? { ...row, status: "error", error: message, loaded: 0 }
               : row,
           ),
         );
@@ -156,6 +197,21 @@ export function GuestUploadExperience({
         </h1>
         <p className="mt-6 font-sans text-base text-muted-foreground">
           Uploads are temporarily closed for this wedding.
+        </p>
+      </div>
+    );
+  }
+
+  if (!driveReady) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 py-24 text-center">
+        <div className="chapter-rule mb-5 bg-bloom" />
+        <h1 className="font-serif text-4xl tracking-tight text-ink sm:text-5xl">
+          {weddingName}
+        </h1>
+        <p className="mt-6 font-sans text-base leading-relaxed text-muted-foreground">
+          This collection isn&apos;t ready for uploads yet. The couple still
+          needs to finish setup — please try again later.
         </p>
       </div>
     );
@@ -228,18 +284,7 @@ export function GuestUploadExperience({
               {selectedCount} {selectedCount === 1 ? "memory" : "memories"}{" "}
               selected
             </p>
-            <ul className="max-h-48 space-y-2 overflow-y-auto font-sans text-sm text-muted-foreground">
-              {items.map((item) => (
-                <li key={item.id} className="flex justify-between gap-3">
-                  <span className="truncate">{item.file.name}</span>
-                  {item.status === "error" && (
-                    <span className="shrink-0 text-destructive">
-                      {item.error}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <PreviewGrid items={items} />
             <Button
               className="h-14 w-full bg-bloom text-base font-semibold text-white hover:bg-bloom/90"
               size="lg"
@@ -279,16 +324,106 @@ export function GuestUploadExperience({
             <p className="font-sans text-lg text-ink">
               Uploading your memories…
             </p>
-            <p className="font-serif text-3xl text-ink">
-              {completedCount} / {selectedCount}
-            </p>
-            <Progress value={overallProgress} className={cn("h-2")} />
-            <p className="animate-soft-pulse font-sans text-sm text-muted-foreground">
+            <PreviewGrid items={items} showProgress />
+            <div>
+              <p className="font-serif text-3xl text-ink">{overallProgress}%</p>
+              <p className="mt-1 font-sans text-sm text-muted-foreground">
+                {completedCount} of {selectedCount}{" "}
+                {selectedCount === 1 ? "file" : "files"} complete
+              </p>
+            </div>
+            <Progress value={overallProgress} className={cn("h-2 w-full")} />
+            <p className="font-sans text-sm text-muted-foreground">
               Please keep this page open
             </p>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function PreviewGrid({
+  items,
+  showProgress = false,
+}: {
+  items: UploadItem[];
+  showProgress?: boolean;
+}) {
+  return (
+    <ul className="grid max-h-64 grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4">
+      {items.map((item) => {
+        const video = isVideo(item.file);
+        const pct =
+          item.file.size > 0
+            ? Math.round((item.loaded / item.file.size) * 100)
+            : 0;
+
+        return (
+          <li key={item.id} className="min-w-0">
+            <div
+              className={cn(
+                "relative aspect-square overflow-hidden rounded-lg border border-ink/10 bg-ink/5",
+                item.status === "error" && "border-destructive/40",
+              )}
+            >
+              {item.previewUrl && !video ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.previewUrl}
+                  alt=""
+                  className="size-full object-cover"
+                />
+              ) : item.previewUrl && video ? (
+                <video
+                  src={item.previewUrl}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="size-full object-cover"
+                />
+              ) : (
+                <div className="flex size-full flex-col items-center justify-center gap-1 text-ink/35">
+                  {video ? (
+                    <Film className="size-5" strokeWidth={1.5} />
+                  ) : (
+                    <ImageIcon className="size-5" strokeWidth={1.5} />
+                  )}
+                </div>
+              )}
+
+              {video && item.previewUrl && (
+                <div className="absolute top-1.5 left-1.5 rounded bg-ink/55 p-1 text-white">
+                  <Film className="size-3" strokeWidth={2} />
+                </div>
+              )}
+
+              {showProgress && item.status === "uploading" && (
+                <div className="absolute inset-x-0 bottom-0 bg-ink/50 px-1.5 py-1">
+                  <div className="h-1 overflow-hidden rounded-full bg-white/30">
+                    <div
+                      className="h-full rounded-full bg-white transition-[width] duration-150"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {showProgress && item.status === "done" && (
+                <div className="absolute inset-0 bg-bloom/35" />
+              )}
+
+              {item.status === "error" && (
+                <div className="absolute inset-0 flex items-end bg-destructive/20 p-1.5">
+                  <span className="line-clamp-2 font-sans text-[10px] leading-tight text-destructive">
+                    {item.error ?? "Failed"}
+                  </span>
+                </div>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

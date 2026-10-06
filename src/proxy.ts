@@ -26,5 +26,8 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/:path*", "/upload/:path*"],
+  // Keep /api out of the proxy: Next buffers matched request bodies (~10MB),
+  // which truncates guest photo/video uploads. Security headers for APIs come
+  // from next.config.ts. Auth for /api/* is enforced in the route handlers.
+  matcher: ["/admin/:path*", "/upload/:path*"],
 };

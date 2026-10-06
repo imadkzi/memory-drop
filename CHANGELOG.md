@@ -53,9 +53,8 @@ First production-shaped MVP: private wedding collections, guest upload-only link
 
 ### Known gaps (tracked in `ROADMAP.md`)
 
-- Open self-registration; no email verification, 2FA, or login rate limiting
-- No zip bulk download; no delete-wedding UI
-- Drive disconnect UI incomplete relative to role matrix
+- Open self-registration; no email verification or 2FA (login rate limiting / lockout added later — see Unreleased)
+- No delete-wedding UI; Drive disconnect UX incomplete relative to role matrix
 - Large originals still slow if downloaded; lightbox uses Drive thumbnails for view speed
 - Not production-hardened for multi-instance rate limits or Google OAuth app verification
 
@@ -67,13 +66,26 @@ _Changes after 0.1.0 will be listed here until the next tagged release._
 
 ### Added
 
+- Login / signup IP rate limiting via Better Auth (enabled in all environments; tighter caps on `/sign-in/email` and `/sign-up/email`)
+- Email-based sign-in lockout after 5 failed attempts within 15 minutes (15-minute lock; cleared on successful sign-in)
+- Admin invites by email: owner creates a copyable `/invite/[token]` link (7-day expiry, Admin role only). New users set a password; existing users sign in, then accept. Pending invites can be refreshed or revoked.
+- Guest + admin empty states when Google Drive is not connected (uploads blocked with a clear message)
+- Settings upload limits edited in MB (converted to bytes on save)
+- Gallery bulk download as a zip (selected or all on page, up to 100 files)
 - Privacy policy (`/privacy`) and terms (`/terms`), last updated 6 October 2026, written to the product as built: guest upload-only links, files stored in the owner's Google Drive, account and session data held by Memory Drop
 - Shared legal layout with brand mark, privacy/terms navigation, and contact `hello@imadkazi.co.uk`
 - Signup states that creating an account accepts the terms and privacy policy
 - Guest upload screen links to the privacy policy and says files go to that wedding's collection
 - Marketing footer links to the idea, the flow, privacy, terms, and contact
+- `robots.ts` and `sitemap.ts` for public marketing/legal pages (admin, upload, invite, and API paths disallowed)
 
 ### Changed
 
 - Marketing homepage split out of a single page into sections: floral hero, story, four-step flow, phone upload mock, privacy polaroids, and get-started
 - Privacy band darkened so the guest-access copy reads on the rose wash
+- Performance pass: marketing assets converted to WebP (~18MB → ~0.9MB public), fewer font weights with `display: swap`, AVIF/WebP image pipeline, long-cache static headers, below-fold dynamic imports, Open Graph metadata, skip link, and LCP-priority floral/logo loading
+- Admin Sharing / Settings / Team CTAs use proper buttons; wedding workspace panels restyled for brand consistency
+
+### Fixed
+
+- Guest uploads no longer pass through `proxy.ts` (`/api` removed from the matcher). Matched routes were buffering bodies at ~10MB and silently truncating larger photos/videos; auth for APIs stays in route handlers, security headers stay in `next.config.ts`

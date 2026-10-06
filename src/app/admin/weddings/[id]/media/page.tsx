@@ -19,6 +19,10 @@ export default async function WeddingMediaPage({ params, searchParams }: Props) 
   const wedding = await prisma.wedding.findUnique({ where: { id } });
   if (!wedding) notFound();
 
+  const driveConnected = Boolean(
+    wedding.driveConnectionId && wedding.driveFolderId,
+  );
+
   const mediaType = type === "PHOTO" || type === "VIDEO" ? type : undefined;
 
   const take = 48;
@@ -47,7 +51,7 @@ export default async function WeddingMediaPage({ params, searchParams }: Props) 
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="rounded-2xl border border-ink/8 bg-white/95 p-6 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.25)] sm:p-8 lg:p-10">
       <div>
         <h1 className="font-serif text-4xl tracking-tight text-ink">
           Photos &amp; Videos
@@ -57,7 +61,25 @@ export default async function WeddingMediaPage({ params, searchParams }: Props) 
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 pb-3">
+      {!driveConnected ? (
+        <div className="mt-6 rounded-2xl border border-bloom/20 bg-bloom-soft/70 px-5 py-4">
+          <p className="font-sans text-sm font-medium text-ink">
+            Google Drive is not connected
+          </p>
+          <p className="mt-1 font-sans text-sm text-muted-foreground">
+            Guests can&apos;t upload until Drive is connected. Connect it in
+            Settings before sharing your link.
+          </p>
+          <Link
+            href={`/admin/weddings/${id}/settings`}
+            className="mt-3 inline-flex h-10 items-center rounded-md bg-bloom px-4 font-sans text-sm font-semibold text-white hover:bg-bloom/90"
+          >
+            Open settings
+          </Link>
+        </div>
+      ) : null}
+
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 pb-3">
         <div className="flex gap-5">
           <FilterTab
             href={`/admin/weddings/${id}/media`}
@@ -78,12 +100,14 @@ export default async function WeddingMediaPage({ params, searchParams }: Props) 
         <p className="font-sans text-sm text-muted-foreground">Newest first</p>
       </div>
 
-      <MediaGallery
-        weddingId={id}
-        items={serialized}
-        nextCursor={nextCursor}
-        type={mediaType}
-      />
+      <div className="mt-6">
+        <MediaGallery
+          weddingId={id}
+          items={serialized}
+          nextCursor={nextCursor}
+          type={mediaType}
+        />
+      </div>
     </div>
   );
 }

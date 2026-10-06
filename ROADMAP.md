@@ -12,7 +12,7 @@ Work that should land before trusting the app with a real wedding day.
 
 ### Auth & access
 
-- [ ] Login / signup rate limiting and basic lockout
+- [x] Login / signup rate limiting and basic lockout
 - [ ] Email verification before creating weddings (or invite-only registration)
 - [ ] Stronger password policy (or passkeys)
 - [ ] Optional 2FA for owners
@@ -20,24 +20,27 @@ Work that should land before trusting the app with a real wedding day.
 
 ### Reliability & ops
 
-- [ ] Production deploy (hosting, managed Postgres, env secrets, HTTPS)
-- [ ] Google Cloud OAuth consent screen / verification for `drive.file`
+- [ ] Production deploy (Railway + managed Postgres, env secrets, HTTPS, `prisma migrate deploy`)
+- [ ] Google Cloud OAuth: production redirect URI + owner as test user (`drive.file`; full verification optional for a private wedding)
+- [x] Keep `/api` (especially uploads) out of `proxy.ts` matcher so large guest files are not body-buffered/truncated
+- [ ] Raise day-of upload rate limits via env (venue WiFi often shares one IP; defaults are too tight for ~20 guests)
+- [ ] Phone smoke test on the production URL (photo + video, cellular and WiFi)
 - [ ] Health check + structured error monitoring (e.g. Sentry)
-- [ ] Replace in-memory upload rate limit with shared store (Redis) for multi-instance
+- [ ] Replace in-memory upload rate limit with shared store (Redis) for multi-instance — skip while on a single replica
 - [ ] Backup / restore story for Postgres metadata (Drive files stay in the owner’s Drive)
 
 ### Admin completeness
 
 - [ ] Disconnect Google Drive (owner) with clear UX when uploads would fail
 - [ ] Delete wedding (owner) — soft-delete metadata; document Drive folder behaviour
-- [ ] Bulk download as zip (or async zip job) for selected / all media
-- [ ] Clear empty / error states when Drive is not connected before first guest upload
+- [x] Bulk download as zip (or async zip job) for selected / all media
+- [x] Clear empty / error states when Drive is not connected before first guest upload
 - [ ] Prefetch / cache large previews more aggressively for gallery + lightbox
 
 ### Guest experience
 
 - [ ] Mobile camera / library UX polish (progress, retries, offline-ish failure messages)
-- [ ] Upload size guidance in human units (MB), not only byte settings
+- [x] Upload size guidance in human units (MB), not only byte settings
 - [ ] Optional guest caption / message field (still no guest gallery)
 
 ---
@@ -49,12 +52,12 @@ Work that should land before trusting the app with a real wedding day.
 - [ ] Printable QR + sign PDF template
 - [ ] Short vanity / branded guest path (optional custom slug)
 - [ ] “Pause uploads” one-tap from dashboard (already have setting — surface it more)
-- [ ] Day-of checklist: Drive connected, link copied, QR downloaded, event date set
+- [ ] Day-of checklist: Drive connected, link copied, QR downloaded, event date set, rate limits raised
 
 ### Team & accounts
 
-- [ ] Invite flow that emails people who do not yet have an account
-- [ ] Accept invite → create password → join wedding
+- [x] Invite flow with copyable link (create password or sign in, then accept)
+- [ ] Email delivery for invites (when a domain / Resend etc. is available)
 - [ ] Transfer ownership
 - [ ] Activity log (who deleted / downloaded / regenerated link)
 
@@ -68,9 +71,10 @@ Work that should land before trusting the app with a real wedding day.
 ### Brand & marketing
 
 - [x] Privacy policy and terms, linked from the homepage, signup, and guest upload
+- [x] Performance / SEO baseline: WebP assets, font swap, robots + sitemap, Open Graph metadata
+- [ ] Dedicated OG / social share image (beyond floral asset)
 - [ ] Real photo assets pipeline for landing (licensed wedding photography)
 - [ ] Pricing / waitlist page if going commercial
-- [ ] SEO / OG images for marketing pages only (admin stays noindex)
 
 ---
 
@@ -101,9 +105,9 @@ Out of MVP scope; revisit when core weddings are stable.
 
 | Version | Theme |
 |---|---|
-| **0.1.x** | MVP bugfixes, auth hardening, deploy |
-| **0.2.0** | Day-of polish (zip download, print QR, Drive disconnect/delete) |
-| **0.3.0** | Invites + activity log + media tooling |
-| **1.0.0** | Production-trusted: verified OAuth, monitoring, rate limits, closed signup |
+| **0.1.x** | MVP bugfixes, auth hardening, deploy, upload proxy fix |
+| **0.2.0** | Day-of polish (print QR, Drive disconnect/delete, checklist) |
+| **0.3.0** | Email invites + activity log + media tooling |
+| **1.0.0** | Production-trusted: verified OAuth, monitoring, shared rate limits, closed signup |
 
 Update this file when priorities shift; move shipped items into `CHANGELOG.md`.

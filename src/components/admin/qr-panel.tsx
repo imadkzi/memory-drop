@@ -40,31 +40,29 @@ export function QrPanel({
   }
 
   return (
-    <section>
-      <div className="chapter-rule mb-5 bg-bloom" />
+    <>
       <h2 className="font-serif text-2xl tracking-tight text-ink">The code</h2>
       <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">
-        Print it. Frame it. Leave it on a table. Guests scan and share.
+        Print it, frame it or leave it on a table. Guests can scan and share.
       </p>
 
-      {error && <p className="mt-4 font-sans text-sm text-destructive">{error}</p>}
+      {error && (
+        <p className="mt-4 font-sans text-sm text-destructive">{error}</p>
+      )}
 
       {dataUrl ? (
         <div className="mt-8">
-          <div className="relative inline-block rotate-[-1.5deg]">
-            <div className="absolute -inset-3 -z-10 rounded-full bg-bloom/10 blur-2xl" aria-hidden />
-            <figure className="bg-white p-3 shadow-[0_20px_50px_-24px_rgba(40,20,20,0.45)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={dataUrl}
-                alt="Guest upload QR code"
-                className="size-44 sm:size-52"
-              />
-              <figcaption className="mt-2 text-center font-serif text-[11px] tracking-wide text-ink/40">
-                Scan to upload
-              </figcaption>
-            </figure>
-          </div>
+          <figure className="mx-auto flex w-fit flex-col items-center rounded-xl border border-ink/8 bg-white p-4 shadow-[0_12px_32px_-20px_rgba(40,20,20,0.35)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={dataUrl}
+              alt="Guest upload QR code"
+              className="size-44 sm:size-52"
+            />
+            <figcaption className="mt-2 text-center font-sans text-[11px] tracking-wide text-ink/40">
+              Scan to upload
+            </figcaption>
+          </figure>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button
               type="button"
@@ -79,7 +77,7 @@ export function QrPanel({
               variant="outline"
               onClick={load}
               disabled={loading}
-              className="h-11 border-ink/15 bg-white text-ink hover:bg-ink/5"
+              className="h-11 border-bloom/40 bg-white text-bloom hover:bg-bloom-soft hover:text-bloom"
             >
               <RefreshCw className="size-4" />
               {loading ? "Refreshing…" : "Refresh"}
@@ -98,6 +96,6 @@ export function QrPanel({
           </Button>
         )
       )}
-    </section>
+    </>
   );
 }

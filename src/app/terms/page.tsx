@@ -60,11 +60,14 @@ export default function TermsPage() {
           privacy policy for what that deletion covers.
         </p>
         <p>
-          The wedding owner can invite an admin by email if that person already
-          has an account. Admins can view, download, and delete media and see
-          wedding settings. Only the owner can add or remove admins and
-          regenerate the upload link. Removing an admin removes their access to
-          that wedding. It does not delete their Memory Drop account.
+          The wedding owner can invite an admin by email. That creates a private
+          invite link the owner copies and sends. The invite expires after 7
+          days. If the person does not have an account yet, they set a password
+          on the link. If they already have an account, they sign in and accept.
+          Admins can view, download, and delete media and see wedding settings.
+          Only the owner can invite or remove admins and regenerate the upload
+          link. Removing an admin removes their access to that wedding. It does
+          not delete their Memory Drop account.
         </p>
       </section>
 

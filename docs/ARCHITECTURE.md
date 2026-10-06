@@ -74,6 +74,8 @@ Platform users authenticate with Better Auth. Wedding access is always checked v
 - Never expose OAuth secrets, refresh tokens, or raw upload tokens in logs or client code
 - Validate all inputs with Zod
 - Rate-limit guest upload session creation (in-memory sliding window; single-instance MVP)
+- Rate-limit admin sign-in / sign-up by IP (Better Auth; always enabled)
+- Lock email after 5 failed sign-ins in 15 minutes (in-memory; 15-minute lock)
 - Security headers via Next.js middleware/proxy
 - CSRF protection for cookie-authenticated admin mutations (Better Auth + same-site cookies)
 

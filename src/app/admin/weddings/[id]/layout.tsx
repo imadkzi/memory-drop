@@ -39,12 +39,12 @@ export default async function WeddingLayout({ children, params }: Props) {
     : "Event date not set";
 
   return (
-    <div className="light-wash min-h-screen overflow-x-clip">
+    <>
       <header className="border-b border-ink/8 bg-[#faf6f2]/85 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/admin/dashboard" className="inline-flex shrink-0">
             <Image
-              src="/logo-bloom.png"
+              src="/logo-bloom.webp"
               alt="MemoryDrop"
               width={200}
               height={36}
@@ -79,6 +79,6 @@ export default async function WeddingLayout({ children, params }: Props) {
         />
         <div className="min-w-0 flex-1">{children}</div>
       </div>
-    </div>
+    </>
   );
 }

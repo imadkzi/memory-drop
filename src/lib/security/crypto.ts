@@ -38,6 +38,10 @@ export function hashUploadToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
+/** Same strength as upload tokens — used for admin invite links. */
+export const generateInviteToken = generateUploadToken;
+export const hashInviteToken = hashUploadToken;
+
 export function generateSlug(name: string): string {
   const base = name
     .toLowerCase()

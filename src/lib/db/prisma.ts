@@ -7,8 +7,17 @@ const globalForPrisma = globalThis as unknown as {
   prismaSchemaKey?: string;
 };
 
-/** Busts the hot-reload singleton when `prisma generate` adds/removes fields. */
-const schemaKey = Object.values(Prisma.WeddingScalarFieldEnum).join(",");
+/**
+ * Busts the hot-reload singleton when `prisma generate` adds models/fields.
+ * Include core model enums so new tables also invalidate the cache.
+ */
+const schemaKey = [
+  ...Object.values(Prisma.WeddingScalarFieldEnum),
+  ...Object.values(Prisma.WeddingAdminScalarFieldEnum),
+  ...Object.values(Prisma.WeddingAdminInviteScalarFieldEnum),
+  ...Object.values(Prisma.MediaScalarFieldEnum),
+  ...Object.values(Prisma.UserScalarFieldEnum),
+].join(",");
 
 function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL;
@@ -37,4 +46,14 @@ function getPrismaClient() {
   return globalForPrisma.prisma;
 }
 
-export const prisma = getPrismaClient();
+/**
+ * Proxy so imports always hit the current client after a schema regenerates,
+ * instead of holding a stale instance from first module evaluation.
+ */
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getPrismaClient();
+    const value = Reflect.get(client, prop, receiver);
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});

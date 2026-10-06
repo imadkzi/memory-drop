@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db/prisma";
 import { requireWeddingAccess } from "@/lib/auth/session";
 import { addAdminSchema } from "@/lib/validation/schemas";
 import { logger } from "@/lib/logging/logger";
+import { createOrRefreshAdminInvite } from "@/lib/weddings/admin-invite";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -24,11 +25,24 @@ export async function GET(_request: Request, context: Ctx) {
     include: { user: { select: { id: true, name: true, email: true } } },
   });
 
+  const invites = await prisma.weddingAdminInvite.findMany({
+    where: { weddingId: id, status: "PENDING" },
+    orderBy: { createdAt: "desc" },
+  });
+
   return NextResponse.json({
     admins: admins.map((admin) => ({
       id: admin.id,
       role: admin.role,
       user: admin.user,
+    })),
+    invites: invites.map((invite) => ({
+      id: invite.id,
+      email: invite.email,
+      role: invite.role,
+      status: invite.status,
+      expiresAt: invite.expiresAt.toISOString(),
+      createdAt: invite.createdAt.toISOString(),
     })),
   });
 }
@@ -41,8 +55,15 @@ export async function POST(request: Request, context: Ctx) {
   }
   const membership = await requireWeddingAccess(session.user.id, id, ["OWNER"]);
   if (!membership) {
-    logger.warn("permission_denied", { userId: session.user.id, weddingId: id, action: "add_admin" });
-    return NextResponse.json({ error: "Only the owner can manage administrators." }, { status: 403 });
+    logger.warn("permission_denied", {
+      userId: session.user.id,
+      weddingId: id,
+      action: "invite_admin",
+    });
+    return NextResponse.json(
+      { error: "Only the owner can manage administrators." },
+      { status: 403 },
+    );
   }
 
   const parsed = addAdminSchema.safeParse(await request.json());
@@ -50,28 +71,26 @@ export async function POST(request: Request, context: Ctx) {
     return NextResponse.json({ error: "Please provide a valid email." }, { status: 400 });
   }
 
-  const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
-  if (!user) {
-    return NextResponse.json(
-      { error: "No account found with that email. Ask them to register first." },
-      { status: 404 },
-    );
-  }
-
-  const existing = await prisma.weddingAdmin.findUnique({
-    where: { weddingId_userId: { weddingId: id, userId: user.id } },
-  });
-  if (existing) {
-    return NextResponse.json({ error: "That person is already an administrator." }, { status: 409 });
-  }
-
-  const admin = await prisma.weddingAdmin.create({
-    data: {
-      weddingId: id,
-      userId: user.id,
-      role: "ADMIN",
-    },
+  const result = await createOrRefreshAdminInvite({
+    weddingId: id,
+    email: parsed.data.email,
+    invitedByUserId: session.user.id,
   });
 
-  return NextResponse.json({ admin: { id: admin.id, role: admin.role, userId: user.id } });
+  if ("error" in result) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
+
+  logger.info("admin_invite_created", {
+    weddingId: id,
+    inviteId: result.invite.id,
+    userId: session.user.id,
+    refreshed: result.refreshed,
+  });
+
+  return NextResponse.json({
+    invite: result.invite,
+    url: result.url,
+    refreshed: result.refreshed,
+  });
 }

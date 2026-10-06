@@ -18,16 +18,18 @@ export default async function WeddingSettingsPage({ params }: Props) {
   if (!wedding) notFound();
 
   return (
-    <div className="max-w-2xl rounded-2xl border border-ink/8 bg-white/95 p-6 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.25)] sm:p-8 lg:p-10">
+    <div className="rounded-2xl border border-ink/8 bg-white/95 p-6 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.25)] sm:p-8 lg:p-10">
       <p className="font-sans text-[11px] tracking-[0.28em] text-bloom uppercase">
         Collection
       </p>
       <h1 className="mt-3 font-serif text-4xl tracking-tight text-ink sm:text-5xl">
         Settings
       </h1>
-      <p className="mt-4 font-sans text-muted-foreground">{wedding.name}</p>
+      <p className="mt-4 max-w-xl font-sans text-base leading-relaxed text-muted-foreground">
+        Manage your event details and storage settings.
+      </p>
 
-      <div className="mt-12">
+      <div className="mt-10">
         <WeddingSettingsForm
           wedding={{
             id: wedding.id,
@@ -35,7 +37,6 @@ export default async function WeddingSettingsPage({ params }: Props) {
             eventDate: wedding.eventDate
               ? wedding.eventDate.toISOString().slice(0, 10)
               : null,
-            uploadEnabled: wedding.uploadEnabled,
             maxPhotoSizeBytes: wedding.maxPhotoSizeBytes,
             maxVideoSizeBytes: wedding.maxVideoSizeBytes,
             driveConnected: Boolean(wedding.driveConnectionId),

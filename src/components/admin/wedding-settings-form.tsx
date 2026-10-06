@@ -2,35 +2,53 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { HardDrive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 
 type WeddingSettings = {
   id: string;
   name: string;
   eventDate: string | null;
-  uploadEnabled: boolean;
   maxPhotoSizeBytes: number;
   maxVideoSizeBytes: number;
   driveConnected: boolean;
   isOwner: boolean;
 };
 
+const MB = 1024 * 1024;
+
 const field =
-  "h-11 border-0 border-b border-ink/15 bg-transparent px-0 shadow-none focus-visible:border-bloom focus-visible:ring-0 rounded-none";
+  "h-11 rounded-xl border border-ink/12 bg-[#faf6f2]/60 px-3 shadow-none focus-visible:border-bloom focus-visible:ring-bloom/20";
+
+const labelClass =
+  "font-sans text-[11px] tracking-[0.18em] text-ink/45 uppercase";
+
+function SectionRule() {
+  return <div className="border-t border-ink/8" />;
+}
+
+function bytesToMb(bytes: number) {
+  return Math.round((bytes / MB) * 10) / 10;
+}
+
+function mbToBytes(mb: number) {
+  return Math.round(mb * MB);
+}
 
 export function WeddingSettingsForm({ wedding }: { wedding: WeddingSettings }) {
   const router = useRouter();
   const [name, setName] = useState(wedding.name);
   const [eventDate, setEventDate] = useState(wedding.eventDate ?? "");
-  const [uploadEnabled, setUploadEnabled] = useState(wedding.uploadEnabled);
-  const [maxPhoto, setMaxPhoto] = useState(String(wedding.maxPhotoSizeBytes));
-  const [maxVideo, setMaxVideo] = useState(String(wedding.maxVideoSizeBytes));
+  const [maxPhotoMb, setMaxPhotoMb] = useState(
+    String(bytesToMb(wedding.maxPhotoSizeBytes)),
+  );
+  const [maxVideoMb, setMaxVideoMb] = useState(
+    String(bytesToMb(wedding.maxVideoSizeBytes)),
+  );
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [newLink, setNewLink] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   async function save(event: React.FormEvent) {
@@ -38,15 +56,28 @@ export function WeddingSettingsForm({ wedding }: { wedding: WeddingSettings }) {
     setSaving(true);
     setError(null);
     setMessage(null);
+
+    const photoMb = Number(maxPhotoMb);
+    const videoMb = Number(maxVideoMb);
+    if (!Number.isFinite(photoMb) || photoMb <= 0 || photoMb > 100) {
+      setSaving(false);
+      setError("Photo limit must be between 0.1 and 100 MB.");
+      return;
+    }
+    if (!Number.isFinite(videoMb) || videoMb <= 0 || videoMb > 5 * 1024) {
+      setSaving(false);
+      setError("Video limit must be between 1 MB and 5120 MB (5 GB).");
+      return;
+    }
+
     const res = await fetch(`/api/weddings/${wedding.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
         eventDate: eventDate || null,
-        uploadEnabled,
-        maxPhotoSizeBytes: Number(maxPhoto),
-        maxVideoSizeBytes: Number(maxVideo),
+        maxPhotoSizeBytes: mbToBytes(photoMb),
+        maxVideoSizeBytes: mbToBytes(videoMb),
       }),
     });
     const json = await res.json();
@@ -59,160 +90,160 @@ export function WeddingSettingsForm({ wedding }: { wedding: WeddingSettings }) {
     router.refresh();
   }
 
-  async function regenerate() {
-    setError(null);
-    setMessage(null);
-    const res = await fetch(`/api/weddings/${wedding.id}/regenerate-token`, {
-      method: "POST",
-    });
-    const json = await res.json();
-    if (!res.ok) {
-      setError(json.error ?? "We couldn't regenerate the link.");
-      return;
-    }
-    setNewLink(json.url);
-    setMessage("Previous guest link stopped working immediately.");
-    router.refresh();
-  }
-
   function connectDrive() {
     window.open(`/api/google/connect?weddingId=${wedding.id}`, "_self");
   }
 
   return (
-    <div className="space-y-14">
-      <form onSubmit={save} className="space-y-10">
-        <div>
-          <div className="chapter-rule mb-5 bg-bloom" />
-          <h2 className="font-serif text-2xl tracking-tight text-ink">The wedding</h2>
-          <p className="mt-2 font-sans text-sm text-muted-foreground">
-            Name, date, and how guests may contribute.
-          </p>
-          <div className="mt-8 space-y-8">
-            <div className="space-y-2">
-              <Label
-                htmlFor="name"
-                className="font-sans text-[11px] tracking-[0.18em] text-ink/45 uppercase"
-              >
-                Name
-              </Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className={field}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="event-date"
-                className="font-sans text-[11px] tracking-[0.18em] text-ink/45 uppercase"
-              >
-                Event date
-              </Label>
-              <Input
-                id="event-date"
-                type="date"
-                value={eventDate}
-                onChange={(e) => setEventDate(e.target.value)}
-                className={field}
-              />
-              <p className="font-sans text-xs text-muted-foreground">
-                The day of the wedding — shown in your collection, not when this was created.
-              </p>
-            </div>
-            <div className="flex items-center justify-between gap-6 border-b border-ink/10 pb-6">
-              <div>
-                <p className="font-sans text-sm text-ink">Guest uploads</p>
-                <p className="mt-1 font-sans text-sm text-muted-foreground">
-                  Allow guests to contribute memories
-                </p>
-              </div>
-              <Switch checked={uploadEnabled} onCheckedChange={setUploadEnabled} />
-            </div>
-            <div className="grid gap-8 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="max-photo"
-                  className="font-sans text-[11px] tracking-[0.18em] text-ink/45 uppercase"
-                >
-                  Max photo bytes
-                </Label>
-                <Input
-                  id="max-photo"
-                  value={maxPhoto}
-                  onChange={(e) => setMaxPhoto(e.target.value)}
-                  className={field}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="max-video"
-                  className="font-sans text-[11px] tracking-[0.18em] text-ink/45 uppercase"
-                >
-                  Max video bytes
-                </Label>
-                <Input
-                  id="max-video"
-                  value={maxVideo}
-                  onChange={(e) => setMaxVideo(e.target.value)}
-                  className={field}
-                />
-              </div>
-            </div>
-          </div>
-          <Button
-            type="submit"
-            disabled={saving}
-            className="mt-8 h-11 bg-bloom px-6 font-semibold text-white hover:bg-bloom/90"
-          >
-            {saving ? "Saving…" : "Save changes"}
-          </Button>
-        </div>
-      </form>
+    <form onSubmit={save} className="space-y-8">
+      <SectionRule />
 
       <section>
-        <div className="chapter-rule mb-5 bg-bloom" />
+        <h2 className="font-serif text-2xl tracking-tight text-ink">
+          The wedding
+        </h2>
+        <p className="mt-2 font-sans text-sm text-muted-foreground">
+          Name and date for your collection.
+        </p>
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="name" className={labelClass}>
+              Name
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className={field}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="event-date" className={labelClass}>
+              Event date
+            </Label>
+            <Input
+              id="event-date"
+              type="date"
+              value={eventDate}
+              onChange={(e) => setEventDate(e.target.value)}
+              className={field}
+            />
+          </div>
+        </div>
+      </section>
+
+      <SectionRule />
+
+      <section>
         <h2 className="font-serif text-2xl tracking-tight text-ink">Storage</h2>
-        <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 font-sans text-sm text-muted-foreground">
           {wedding.driveConnected
             ? "Google Drive is connected. Files land in a private folder you own."
             : "Connect Google Drive so guest uploads have a private home."}
         </p>
-        {wedding.isOwner && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={connectDrive}
-            className="mt-6 h-11 border-ink/15 bg-white px-5 text-ink hover:bg-ink/5"
-          >
-            {wedding.driveConnected ? "Reconnect Google Drive" : "Connect Google Drive"}
-          </Button>
-        )}
+        <div
+          className={
+            wedding.driveConnected
+              ? "mt-5 flex flex-col gap-4 rounded-2xl bg-bloom-soft/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+              : "mt-5 flex flex-col gap-4 rounded-2xl border border-bloom/25 bg-bloom-soft/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+          }
+        >
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-bloom shadow-sm">
+              <HardDrive className="size-5" strokeWidth={1.6} />
+            </div>
+            <div className="min-w-0">
+              <p className="font-sans text-sm font-medium text-ink">
+                {wedding.driveConnected
+                  ? "Google Drive connected"
+                  : "Google Drive not connected"}
+              </p>
+              <p className="mt-1 font-sans text-xs leading-relaxed text-muted-foreground">
+                {wedding.driveConnected
+                  ? "All guest uploads are saved directly to your Google Drive folder."
+                  : "Guests cannot upload until Drive is connected. Connect it before sharing your link."}
+              </p>
+            </div>
+          </div>
+          {wedding.isOwner && (
+            <Button
+              type="button"
+              onClick={connectDrive}
+              className="h-10 shrink-0 bg-bloom px-4 font-semibold text-white hover:bg-bloom/90"
+            >
+              {wedding.driveConnected
+                ? "Reconnect Google Drive"
+                : "Connect Google Drive"}
+            </Button>
+          )}
+        </div>
       </section>
+
+      <SectionRule />
 
       <section>
-        <div className="chapter-rule mb-5 bg-bloom" />
-        <h2 className="font-serif text-2xl tracking-tight text-ink">Reset the link</h2>
-        <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">
-          Regenerating stops the previous URL and QR code immediately. Guests will need the new one.
+        <h2 className="font-serif text-2xl tracking-tight text-ink">
+          Upload limits
+        </h2>
+        <p className="mt-2 font-sans text-sm text-muted-foreground">
+          Maximum size guests can upload for each file.
         </p>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={regenerate}
-          className="mt-6 h-11 border-ink/15 bg-white px-5 text-ink hover:bg-ink/5"
-        >
-          Regenerate upload link
-        </Button>
-        {newLink && (
-          <p className="mt-5 break-all font-sans text-sm leading-relaxed text-ink/60">{newLink}</p>
-        )}
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="max-photo" className={labelClass}>
+              Max photo size (MB)
+            </Label>
+            <Input
+              id="max-photo"
+              type="number"
+              min={0.1}
+              max={100}
+              step={0.1}
+              value={maxPhotoMb}
+              onChange={(e) => setMaxPhotoMb(e.target.value)}
+              className={field}
+            />
+            <p className="font-sans text-xs text-muted-foreground">
+              Default 25 MB. Typical phone photos are 2–8 MB.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="max-video" className={labelClass}>
+              Max video size (MB)
+            </Label>
+            <Input
+              id="max-video"
+              type="number"
+              min={1}
+              max={5120}
+              step={1}
+              value={maxVideoMb}
+              onChange={(e) => setMaxVideoMb(e.target.value)}
+              className={field}
+            />
+            <p className="font-sans text-xs text-muted-foreground">
+              Default 1024 MB (1 GB). Short clips are usually much smaller.
+            </p>
+          </div>
+        </div>
       </section>
 
-      {message && <p className="font-sans text-sm text-bloom">{message}</p>}
-      {error && <p className="font-sans text-sm text-destructive">{error}</p>}
-    </div>
+      <div className="pt-2">
+        <Button
+          type="submit"
+          disabled={saving}
+          className="h-11 bg-bloom px-6 font-semibold text-white hover:bg-bloom/90"
+        >
+          {saving ? "Saving…" : "Save changes"}
+        </Button>
+        {message && (
+          <p className="mt-3 font-sans text-sm text-bloom">{message}</p>
+        )}
+        {error && (
+          <p className="mt-3 font-sans text-sm text-destructive">{error}</p>
+        )}
+      </div>
+    </form>
   );
 }

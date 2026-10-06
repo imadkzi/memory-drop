@@ -19,17 +19,17 @@ export default async function WeddingSharingPage({ params }: Props) {
   if (!wedding) notFound();
 
   const appUrl = getEnv().NEXT_PUBLIC_APP_URL;
-  const guestPathHint = `${appUrl}/upload/…`;
-
+  let uploadUrl: string | null = null;
   let qrDataUrl: string | null = null;
   let qrError: string | null = null;
+
   try {
     const token = decryptSecret(wedding.encryptedUploadToken);
-    const url = `${appUrl}/upload/${token}`;
-    qrDataUrl = await QRCode.toDataURL(url, {
+    uploadUrl = `${appUrl}/upload/${token}`;
+    qrDataUrl = await QRCode.toDataURL(uploadUrl, {
       margin: 2,
       width: 512,
-      color: { dark: "#5c2a34", light: "#fffaf7" },
+      color: { dark: "#5c2a34", light: "#ffffff" },
     });
   } catch {
     qrError = "QR code unavailable.";
@@ -43,23 +43,36 @@ export default async function WeddingSharingPage({ params }: Props) {
       <h1 className="mt-3 font-serif text-4xl tracking-tight text-ink sm:text-5xl">
         Link &amp; Sharing
       </h1>
-      <p className="mt-4 max-w-md font-sans text-base leading-relaxed text-muted-foreground">
-        One private channel. Pass the link or the code — guests contribute, then leave.
+      <p className="mt-4 max-w-xl font-sans text-base leading-relaxed text-muted-foreground">
+        Give your guests a simple, private way to share their photos and videos.
+        Pass the link or QR code — they can upload, then leave.
       </p>
 
-      <div className="mt-12 grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-start lg:gap-16">
-        <section>
-          <div className="chapter-rule mb-5 bg-bloom" />
-          <h2 className="font-serif text-2xl tracking-tight text-ink">The link</h2>
+      <div className="mt-10 grid gap-5 lg:grid-cols-2 lg:gap-6">
+        <section className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-7">
+          <h2 className="font-serif text-2xl tracking-tight text-ink">
+            The link
+          </h2>
           <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">
-            Drop it on a sign, an invitation, or a quiet message. Anyone with it can upload.
+            Drop it on a sign, an invitation, or a quiet message. Anyone with it
+            can upload photos and videos directly to your collection.
           </p>
           <div className="mt-8">
-            <CopyUploadLink weddingId={id} fallbackLabel={guestPathHint} />
+            <CopyUploadLink
+              weddingId={id}
+              initialUrl={uploadUrl}
+              fallbackLabel={`${appUrl}/upload/…`}
+            />
           </div>
         </section>
 
-        <QrPanel weddingId={id} initialDataUrl={qrDataUrl} initialError={qrError} />
+        <section className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-7">
+          <QrPanel
+            weddingId={id}
+            initialDataUrl={qrDataUrl}
+            initialError={qrError}
+          />
+        </section>
       </div>
     </div>
   );

@@ -14,25 +14,31 @@ export function Hero() {
         aria-hidden
       >
         <Image
-          src="/floral-asset.png"
+          src="/floral-asset.webp"
           alt=""
-          width={1536}
-          height={1024}
+          width={900}
+          height={600}
+          sizes="(max-width: 640px) 22rem, (max-width: 768px) 30rem, 38rem"
           className="absolute top-[4.25rem] -left-10 w-[22rem] max-w-none sm:-top-20 sm:-left-6 sm:w-[30rem] md:-top-24 md:w-[38rem]"
           priority
+          fetchPriority="high"
+          quality={75}
         />
         <Image
-          src="/floral-asset.png"
+          src="/floral-asset.webp"
           alt=""
-          width={1536}
-          height={1024}
+          width={900}
+          height={600}
+          sizes="(max-width: 640px) 22rem, (max-width: 768px) 30rem, 38rem"
           className="absolute -right-10 -bottom-16 w-[22rem] max-w-none -scale-x-100 rotate-180 sm:-right-6 sm:-bottom-20 sm:w-[30rem] md:-bottom-24 md:w-[38rem]"
+          loading="lazy"
+          quality={70}
         />
       </div>
 
       <header className="relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5 md:px-8">
         <Link href="/" className="inline-flex items-center">
-          <BrandMark priority src="/logo-bloom.png" />
+          <BrandMark priority src="/logo-bloom.webp" />
         </Link>
         <div className="flex items-center gap-6 text-base text-ink/80 md:gap-8 md:text-lg">
           <a
@@ -99,11 +105,13 @@ export function Hero() {
               src={photos.lookBack}
               alt="Bride looking back"
               className="absolute -top-4 -right-4 z-20 w-[5.5rem] rotate-[11deg] sm:-right-14 sm:w-[7.75rem]"
+              priority
             />
             <Polaroid
               src={photos.walkToward}
               alt="Couple walking together"
               className="absolute -right-2 bottom-14 z-20 w-[5rem] -rotate-[8deg] sm:-right-10 sm:w-28"
+              priority
             />
 
             <div className="pointer-events-none absolute -bottom-1 left-1/2 z-30 flex w-44 -translate-x-1/2 flex-col items-center sm:w-48">

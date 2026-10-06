@@ -5,11 +5,13 @@ export function Polaroid({
   alt,
   className,
   caption,
+  priority = false,
 }: {
   src: string;
   alt: string;
   className?: string;
   caption?: string;
+  priority?: boolean;
 }) {
   return (
     <figure className={`polaroid ${className ?? ""}`}>
@@ -19,7 +21,9 @@ export function Polaroid({
           alt={alt}
           fill
           className="object-cover"
-          sizes="200px"
+          sizes="(max-width: 640px) 140px, 200px"
+          quality={72}
+          {...(priority ? { priority: true } : { loading: "lazy" as const })}
         />
       </div>
       {caption ? (

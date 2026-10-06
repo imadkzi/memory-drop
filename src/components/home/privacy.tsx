@@ -22,9 +22,9 @@ export function Privacy() {
               They cannot look.
             </h2>
             <p className="mt-5 max-w-md text-base leading-relaxed text-white">
-              The upload link is a capability, not a window. Your sister,
-              planner, or partner can be invited as an admin. Everyone else
-              simply contributes and leaves.
+              The upload link is a capability, not a window. Your family,
+              planner, or partner can be invited as an admin with a private
+              link. Everyone else simply contributes and leaves.
             </p>
           </Reveal>
 

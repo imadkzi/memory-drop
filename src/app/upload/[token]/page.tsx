@@ -29,6 +29,7 @@ export default async function GuestUploadPage({ params }: Props) {
           token="demo"
           weddingName={mockWedding.name}
           uploadEnabled={true}
+          driveReady={true}
         />
       </GuestShell>
     );
@@ -37,7 +38,12 @@ export default async function GuestUploadPage({ params }: Props) {
   const tokenHash = hashUploadToken(token);
   const wedding = await prisma.wedding.findFirst({
     where: { uploadTokenHash: tokenHash },
-    select: { name: true, uploadEnabled: true },
+    select: {
+      name: true,
+      uploadEnabled: true,
+      driveConnectionId: true,
+      driveFolderId: true,
+    },
   });
 
   if (!wedding) {
@@ -62,6 +68,7 @@ export default async function GuestUploadPage({ params }: Props) {
         token={token}
         weddingName={wedding.name}
         uploadEnabled={wedding.uploadEnabled}
+        driveReady={Boolean(wedding.driveConnectionId && wedding.driveFolderId)}
       />
     </GuestShell>
   );
