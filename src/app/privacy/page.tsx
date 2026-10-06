@@ -106,7 +106,7 @@ export default function PrivacyPolicyPage() {
           The scope is{" "}
           <span className="text-ink">drive.file</span>: Memory Drop can create
           and manage files it created for this app. It cannot browse the rest
-          of that Google account. We create a &quot;Wedding Memories&quot;
+          of that Google account. We create a &quot;Memory Drop&quot;
           folder and a folder named for the wedding, then put uploads there.
         </p>
         <p>

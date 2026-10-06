@@ -85,6 +85,7 @@ _Changes after 0.1.0 will be listed here until the next tagged release._
 - Privacy band darkened so the guest-access copy reads on the rose wash
 - Performance pass: marketing assets converted to WebP (~18MB → ~0.9MB public), fewer font weights with `display: swap`, AVIF/WebP image pipeline, long-cache static headers, below-fold dynamic imports, Open Graph metadata, skip link, and LCP-priority floral/logo loading
 - Admin Sharing / Settings / Team CTAs use proper buttons; wedding workspace panels restyled for brand consistency
+- Google Drive root folder created by the app is named **Memory Drop** (was "Wedding Memories"); existing connected folders are unchanged
 
 ### Fixed
 

@@ -10,7 +10,7 @@ import type {
   UploadFileStreamInput,
 } from "@/lib/storage/types";
 
-const ROOT_FOLDER_NAME = "Wedding Memories";
+const ROOT_FOLDER_NAME = "Memory Drop";
 
 export type GoogleDriveAuthTokens = {
   accessToken: string;
@@ -89,7 +89,9 @@ export class GoogleDriveStorageProvider implements StorageProvider {
     return { uploadUrl };
   }
 
-  async uploadFileStream(input: UploadFileStreamInput): Promise<StorageFileMetadata> {
+  async uploadFileStream(
+    input: UploadFileStreamInput,
+  ): Promise<StorageFileMetadata> {
     const body =
       typeof (input.body as ReadableStream).getReader === "function"
         ? Readable.fromWeb(input.body as import("stream/web").ReadableStream)
@@ -178,7 +180,8 @@ export class GoogleDriveStorageProvider implements StorageProvider {
 
   private async findOrCreateFolder(name: string, parentId: string) {
     const escaped = name.replace(/'/g, "\\'");
-    const parentClause = parentId === "root" ? "'root' in parents" : `'${parentId}' in parents`;
+    const parentClause =
+      parentId === "root" ? "'root' in parents" : `'${parentId}' in parents`;
     const existing = await this.drive.files.list({
       q: `mimeType = 'application/vnd.google-apps.folder' and name = '${escaped}' and ${parentClause} and trashed = false`,
       fields: "files(id,name)",

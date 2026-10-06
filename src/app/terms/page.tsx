@@ -134,7 +134,7 @@ export default function TermsPage() {
           connection uses Google OAuth with the drive.file scope, so Memory
           Drop can create and manage the folders and files it creates, and
           cannot read the rest of your Drive. We store the resulting tokens
-          encrypted, and we use them to create a Wedding Memories folder, a
+          encrypted, and we use them to create a Memory Drop folder, a
           folder for the wedding, and to upload, preview, download, and delete
           files the app put there.
         </p>
