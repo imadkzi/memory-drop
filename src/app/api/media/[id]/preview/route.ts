@@ -32,8 +32,15 @@ export async function GET(request: Request, context: Ctx) {
     const { storage } = await getStorageForWedding(media.weddingId);
     const preview = await storage.getFilePreview(media.driveFileId, size);
     if (preview.thumbnailLink) {
-      // Proxy thumbnail to avoid exposing long-lived Drive URLs in HTML
-      const thumb = await fetch(preview.thumbnailLink);
+      // Proxy thumbnail to avoid exposing long-lived Drive URLs in HTML.
+      // If a 4096px frame is unavailable, fall back to the 1600px frame.
+      let thumb = await fetch(preview.thumbnailLink);
+      if (!thumb.ok && size === "large") {
+        const smaller = preview.thumbnailLink.replace("=s4096", "=s1600");
+        if (smaller !== preview.thumbnailLink) {
+          thumb = await fetch(smaller);
+        }
+      }
       if (thumb.ok) {
         const buffer = await thumb.arrayBuffer();
         return new NextResponse(buffer, {

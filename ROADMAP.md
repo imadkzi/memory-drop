@@ -36,7 +36,7 @@ Work that should land before trusting the app with a real wedding day.
 - [x] Bulk download as zip (or async zip job) for selected / all media
 - [x] Clear empty / error states when Drive is not connected before first guest upload
 - [x] Brand Drive root folder as `Memory Drop` for newly connected accounts
-- [ ] Prefetch / cache large previews more aggressively for gallery + lightbox
+- [x] Prefetch / cache large previews more aggressively for gallery + lightbox
 
 ### Guest experience
 

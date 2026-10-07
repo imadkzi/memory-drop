@@ -27,6 +27,14 @@ export type UploadFileStreamInput = {
   body: NodeJS.ReadableStream | ReadableStream<Uint8Array>;
 };
 
+export type OpenedFile = {
+  body: ReadableStream<Uint8Array> | null;
+  status: number;
+  contentType: string | null;
+  contentLength: string | null;
+  contentRange: string | null;
+};
+
 export interface StorageProvider {
   createWeddingFolder(weddingName: string, rootFolderId?: string | null): Promise<{
     folderId: string;
@@ -40,6 +48,8 @@ export interface StorageProvider {
     size?: "thumb" | "large",
   ): Promise<{ thumbnailLink?: string | null }>;
   downloadFile(fileId: string): Promise<ReadableStream<Uint8Array> | NodeJS.ReadableStream>;
+  /** Byte-range aware download. `range` is a single `bytes=start-end` value. */
+  openFile(fileId: string, range?: string | null): Promise<OpenedFile>;
   deleteFile(fileId: string): Promise<void>;
   listFiles(folderId: string): Promise<StorageFileMetadata[]>;
 }

@@ -144,7 +144,7 @@ export class GoogleDriveStorageProvider implements StorageProvider {
   async getFilePreview(fileId: string, size: "thumb" | "large" = "thumb") {
     const file = await this.getFile(fileId);
     const thumbnailLink = file.thumbnailLink
-      ? sizedDriveThumbnail(file.thumbnailLink, size === "large" ? 1600 : 400)
+      ? sizedDriveThumbnail(file.thumbnailLink, size === "large" ? 4096 : 400)
       : null;
     return { thumbnailLink };
   }
@@ -155,6 +155,46 @@ export class GoogleDriveStorageProvider implements StorageProvider {
       { responseType: "stream" },
     );
     return res.data as NodeJS.ReadableStream;
+  }
+
+  async openFile(fileId: string, range?: string | null) {
+    const accessToken = await this.getAccessToken();
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${accessToken}`,
+    };
+    if (range) headers.Range = range;
+
+    const res = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`,
+      { headers },
+    );
+
+    if (res.status === 416) {
+      return {
+        body: null,
+        status: 416,
+        contentType: res.headers.get("content-type"),
+        contentLength: res.headers.get("content-length"),
+        contentRange: res.headers.get("content-range"),
+      };
+    }
+
+    if (!res.ok && res.status !== 206) {
+      const body = await res.text();
+      logger.error("drive_open_file_failed", {
+        status: res.status,
+        body: body.slice(0, 500),
+      });
+      throw new Error("Unable to download file from Drive");
+    }
+
+    return {
+      body: res.body,
+      status: res.status,
+      contentType: res.headers.get("content-type"),
+      contentLength: res.headers.get("content-length"),
+      contentRange: res.headers.get("content-range"),
+    };
   }
 
   async deleteFile(fileId: string) {
@@ -215,7 +255,7 @@ export class GoogleDriveStorageProvider implements StorageProvider {
   }
 }
 
-/** Drive thumbnails often end in =s220; bump for lightbox-quality previews. */
+/** Drive thumbnails often end in =s220. Lightbox asks for a much larger JPEG. */
 function sizedDriveThumbnail(link: string, px: number) {
   if (/=s\d+/.test(link)) {
     return link.replace(/=s\d+(-[a-z]+)?/i, `=s${px}$1`);

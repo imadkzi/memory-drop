@@ -6,6 +6,11 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/). Versioning f
 
 ## [Unreleased]
 
+### Changed
+
+- Lightbox photos fill the viewer. Browser-friendly originals replace the preview once loaded; HEIC stays on a 4096px JPEG frame
+- Lightbox videos start from byte ranges (file head and tail) instead of waiting on a full download
+
 ## [0.1.1] — 2026-10-07
 
 Deployed on Railway. Auth hardening, guest-link invites, zip download, legal pages, and gallery paging on top of the 0.1.0 MVP.

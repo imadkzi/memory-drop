@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -34,6 +34,30 @@ function fullSrc(id: string) {
   return `/api/media/${id}/download?view=1`;
 }
 
+const DISPLAYABLE_IMAGE = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+
+function canShowOriginal(item: Item) {
+  return item.mediaType === "PHOTO" && DISPLAYABLE_IMAGE.has(item.mimeType);
+}
+
+function prefetchVideoEdges(item: Item) {
+  const url = fullSrc(item.id);
+  void fetch(url, {
+    headers: { Range: "bytes=0-2097151" },
+  }).catch(() => undefined);
+  if (item.size > 512 * 1024) {
+    const tail = Math.max(0, item.size - 512 * 1024);
+    void fetch(url, {
+      headers: { Range: `bytes=${tail}-` },
+    }).catch(() => undefined);
+  }
+}
+
 function preloadImage(src: string) {
   return new Promise<void>((resolve, reject) => {
     const img = new window.Image();
@@ -52,76 +76,98 @@ function LightboxPhoto({
   readyIds: Set<string>;
   onReady: (id: string) => void;
 }) {
-  // View a large Drive thumbnail — far faster than streaming the original
-  const display = previewSrc(item.id, "large");
-  const placeholder = previewSrc(item.id);
-  const alreadyReady = readyIds.has(item.id);
-  const [displayReady, setDisplayReady] = useState(alreadyReady);
+  const preview = previewSrc(item.id, "large");
+  const original = fullSrc(item.id);
+  const showOriginalSource = canShowOriginal(item);
+  const previewReady = readyIds.has(item.id);
+  const originalReady = readyIds.has(`full:${item.id}`);
+  const [localPreview, setLocalPreview] = useState(false);
+  const [localOriginal, setLocalOriginal] = useState(false);
+  const previewShown = previewReady || localPreview || originalReady || localOriginal;
+  const sharp = showOriginalSource && (originalReady || localOriginal);
 
   useEffect(() => {
-    if (alreadyReady) {
-      setDisplayReady(true);
-      return;
-    }
     let cancelled = false;
-    setDisplayReady(false);
-    preloadImage(display)
-      .then(() => {
-        if (cancelled) return;
-        setDisplayReady(true);
-        onReady(item.id);
-      })
-      .catch(() => {
-        /* keep grid preview visible */
-      });
+    if (!previewReady && !originalReady) {
+      preloadImage(preview)
+        .then(() => {
+          if (cancelled) return;
+          setLocalPreview(true);
+          onReady(item.id);
+        })
+        .catch(() => undefined);
+    }
+    if (showOriginalSource && !originalReady) {
+      preloadImage(original)
+        .then(() => {
+          if (cancelled) return;
+          setLocalOriginal(true);
+          onReady(`full:${item.id}`);
+        })
+        .catch(() => undefined);
+    }
     return () => {
       cancelled = true;
     };
-  }, [item.id, display, alreadyReady, onReady]);
+  }, [item.id, preview, original, previewReady, originalReady, showOriginalSource, onReady]);
 
   return (
-    <div className="relative flex h-full max-h-full w-full max-w-6xl items-center justify-center">
+    <div className="relative h-full w-full">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={placeholder}
+        src={preview}
         alt=""
         aria-hidden
         className={cn(
-          "absolute max-h-[min(78vh,880px)] max-w-full object-contain transition-opacity duration-300",
-          displayReady ? "opacity-0" : "opacity-100",
+          "absolute inset-0 h-full w-full object-contain transition-opacity duration-300",
+          previewShown && !sharp ? "opacity-100" : "opacity-0",
         )}
       />
-      {!displayReady && (
+      {!previewShown && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="size-8 animate-spin rounded-full border-2 border-white/25 border-t-white/90" />
         </div>
       )}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={display}
-        alt={item.filename}
-        className={cn(
-          "relative max-h-[min(78vh,880px)] max-w-full rounded-sm object-contain shadow-2xl transition-opacity duration-300",
-          displayReady ? "opacity-100" : "opacity-0",
-        )}
-      />
+      {showOriginalSource && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={original}
+          alt={item.filename}
+          className={cn(
+            "h-full w-full object-contain transition-opacity duration-300",
+            sharp ? "opacity-100" : "opacity-0",
+          )}
+        />
+      )}
+      {!showOriginalSource && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={preview}
+          alt={item.filename}
+          className={cn(
+            "h-full w-full object-contain transition-opacity duration-300",
+            previewShown ? "opacity-100" : "opacity-0",
+          )}
+        />
+      )}
     </div>
   );
 }
 
 function LightboxVideo({ item }: { item: Item }) {
   const [ready, setReady] = useState(false);
+  const poster = previewSrc(item.id, "large");
 
   return (
-    <div className="relative flex h-full max-h-full w-full max-w-6xl items-center justify-center">
+    <div className="relative h-full w-full">
       {!ready && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={previewSrc(item.id)}
+            src={poster}
             alt=""
             aria-hidden
-            className="absolute max-h-[min(78vh,880px)] max-w-full object-contain opacity-70 blur-sm"
+            className="absolute inset-0 h-full w-full object-contain"
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="size-8 animate-spin rounded-full border-2 border-white/25 border-t-white/90" />
@@ -132,11 +178,13 @@ function LightboxVideo({ item }: { item: Item }) {
         key={item.id}
         controls
         autoPlay
-        poster={previewSrc(item.id)}
-        onLoadedData={() => setReady(true)}
+        playsInline
+        preload="auto"
+        poster={poster}
+        onCanPlay={() => setReady(true)}
         className={cn(
-          "max-h-[min(78vh,880px)] max-w-full rounded-sm object-contain shadow-2xl transition-opacity duration-300",
-          ready ? "opacity-100" : "opacity-0",
+          "h-full w-full object-contain transition-opacity duration-300",
+          ready ? "opacity-100" : "pointer-events-none opacity-0",
         )}
         src={fullSrc(item.id)}
       />
@@ -166,6 +214,7 @@ export function MediaGallery({
   const [visibleItems, setVisibleItems] = useState(items);
   const [loadCursor, setLoadCursor] = useState(nextCursor);
   const [readyIds, setReadyIds] = useState<Set<string>>(() => new Set());
+  const prefetchedVideos = useRef(new Set<string>());
   const markReady = useCallback((id: string) => {
     setReadyIds((prev) => {
       if (prev.has(id)) return prev;
@@ -287,10 +336,7 @@ export function MediaGallery({
   useEffect(() => {
     if (!playing || lightboxIndex === null) return;
     const current = visibleItems[lightboxIndex];
-    if (current?.mediaType === "VIDEO") {
-      setPlaying(false);
-      return;
-    }
+    if (!current || current.mediaType === "VIDEO") return;
     const timer = window.setInterval(() => {
       setLightboxIndex((index) => {
         if (index === null || !visibleItems.length) return index;
@@ -300,7 +346,8 @@ export function MediaGallery({
     return () => window.clearInterval(timer);
   }, [playing, lightboxIndex, visibleItems]);
 
-  // Prefetch large previews for current + neighbors so next/prev feel instant
+  // Warm the current frame and its neighbors. Videos prefetch the file
+  // head and tail so playback can start before the whole file arrives.
   useEffect(() => {
     if (lightboxIndex === null || !visibleItems.length) return;
     const indexes = [
@@ -311,11 +358,24 @@ export function MediaGallery({
     const unique = [...new Set(indexes)];
     for (const index of unique) {
       const item = visibleItems[index];
-      if (!item || item.mediaType !== "PHOTO") continue;
-      if (readyIds.has(item.id)) continue;
-      void preloadImage(previewSrc(item.id, "large"))
-        .then(() => markReady(item.id))
-        .catch(() => {});
+      if (!item) continue;
+      if (item.mediaType === "PHOTO") {
+        if (!readyIds.has(item.id)) {
+          void preloadImage(previewSrc(item.id, "large"))
+            .then(() => markReady(item.id))
+            .catch(() => undefined);
+        }
+        if (index === lightboxIndex && canShowOriginal(item) && !readyIds.has(`full:${item.id}`)) {
+          void preloadImage(fullSrc(item.id))
+            .then(() => markReady(`full:${item.id}`))
+            .catch(() => undefined);
+        }
+        continue;
+      }
+      if (index !== lightboxIndex && !prefetchedVideos.current.has(item.id)) {
+        prefetchedVideos.current.add(item.id);
+        prefetchVideoEdges(item);
+      }
     }
   }, [lightboxIndex, visibleItems, readyIds, markReady]);
 
@@ -632,13 +692,13 @@ export function MediaGallery({
             </div>
           </div>
 
-          <div className="relative flex min-h-0 flex-1 items-center justify-center px-12 pb-8 sm:px-16">
+          <div className="relative min-h-0 flex-1">
             {visibleItems.length > 1 && (
               <>
                 <button
                   type="button"
                   onClick={goPrev}
-                  className="absolute left-2 z-10 inline-flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:left-4"
+                  className="absolute top-1/2 left-2 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white transition hover:bg-black/55 sm:left-4"
                   aria-label="Previous"
                 >
                   <ChevronLeft className="size-6" />
@@ -646,7 +706,7 @@ export function MediaGallery({
                 <button
                   type="button"
                   onClick={goNext}
-                  className="absolute right-2 z-10 inline-flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:right-4"
+                  className="absolute top-1/2 right-2 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white transition hover:bg-black/55 sm:right-4"
                   aria-label="Next"
                 >
                   <ChevronRight className="size-6" />
@@ -654,7 +714,7 @@ export function MediaGallery({
               </>
             )}
 
-            <div className="flex h-full max-h-full w-full max-w-6xl items-center justify-center">
+            <div className="absolute inset-0">
               {selected.mediaType === "VIDEO" ? (
                 <LightboxVideo key={selected.id} item={selected} />
               ) : (
