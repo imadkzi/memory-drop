@@ -6,6 +6,11 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/). Versioning f
 
 ## [Unreleased]
 
+### Added
+
+- New passwords must be at least 12 characters and cannot be the account email or a common password. Existing passwords can still sign in. Self-signup stays open until email verification.
+- Password fields on sign-in, signup, and invites can show or hide what is being typed.
+
 ### Changed
 
 - Lightbox photos fill the viewer. Browser-friendly originals replace the preview once loaded; HEIC stays on a 4096px JPEG frame

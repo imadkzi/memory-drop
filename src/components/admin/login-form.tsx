@@ -5,8 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { signIn, signUp } from "@/lib/auth/client";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_POLICY_HINT,
+  passwordPolicyError,
+} from "@/lib/security/password-policy";
 
 function authErrorMessage(
   error: { message?: string | null; status?: number; statusText?: string },
@@ -46,6 +52,12 @@ export function LoginForm() {
 
     try {
       if (mode === "register") {
+        const policyError = passwordPolicyError(password, email);
+        if (policyError) {
+          setError(policyError);
+          setLoading(false);
+          return;
+        }
         const result = await signUp.email({ name, email, password });
         if (result.error) {
           setError(authErrorMessage(result.error, "register"));
@@ -115,16 +127,20 @@ export function LoginForm() {
         <Label htmlFor="password" className="text-ink">
           Password
         </Label>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          minLength={8}
+          minLength={mode === "register" ? PASSWORD_MIN_LENGTH : undefined}
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           className="h-11 border-ink/15 bg-white/80"
         />
+        {mode === "register" && (
+          <p className="font-sans text-xs leading-relaxed text-muted-foreground">
+            {PASSWORD_POLICY_HINT}
+          </p>
+        )}
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
       {mode === "register" && (

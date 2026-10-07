@@ -1,15 +1,22 @@
 import { z } from "zod";
+import { passwordPolicyError } from "@/lib/security/password-policy";
 
 export const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8).max(128),
+  password: z.string().min(1).max(128),
 });
 
-export const registerSchema = z.object({
-  name: z.string().min(1).max(100),
-  email: z.string().email(),
-  password: z.string().min(8).max(128),
-});
+export const registerSchema = z
+  .object({
+    name: z.string().min(1).max(100),
+    email: z.string().email(),
+    password: z.string().min(1).max(128),
+  })
+  .superRefine((value, ctx) => {
+    const message = passwordPolicyError(value.password, value.email);
+    if (!message) return;
+    ctx.addIssue({ code: "custom", path: ["password"], message });
+  });
 
 export const createWeddingSchema = z.object({
   name: z.string().min(2).max(120),

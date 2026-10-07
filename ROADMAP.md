@@ -13,10 +13,11 @@ Work that should land before trusting the app with a real wedding day.
 ### Auth & access
 
 - [x] Login / signup rate limiting and basic lockout
-- [ ] Email verification before creating weddings (or invite-only registration)
-- [ ] Stronger password policy (or passkeys)
+- [ ] Email verification before creating weddings
+- [x] Stronger password policy: 12+ characters, not the account email, not a common password. Existing passwords still sign in.
+- [ ] Forgot password, once the app can send email. No public reset link before then: anyone who knows the address could take the account.
 - [ ] Optional 2FA for owners
-- [ ] Close or gate open self-signup (invite codes / allowlist)
+- [x] Leave self-signup open until email verification. No invite-code gate while new couples should still be able to register. After verification exists, an unverified account cannot create a wedding.
 
 ### Reliability & ops
 
@@ -58,7 +59,7 @@ Work that should land before trusting the app with a real wedding day.
 ### Team & accounts
 
 - [x] Invite flow with copyable link (create password or sign in, then accept)
-- [ ] Email delivery for invites (when a domain / Resend etc. is available)
+- [ ] Email delivery for invites and forgot-password (when a domain / Resend etc. is available)
 - [ ] Transfer ownership
 - [ ] Activity log (who deleted / downloaded / regenerated link)
 

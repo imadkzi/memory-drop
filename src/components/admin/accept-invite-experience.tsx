@@ -5,8 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { signIn, signUp, signOut, useSession } from "@/lib/auth/client";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_POLICY_HINT,
+  passwordPolicyError,
+} from "@/lib/security/password-policy";
 
 type InviteInfo = {
   email: string;
@@ -63,6 +69,11 @@ export function AcceptInviteExperience({ token }: { token: string }) {
   async function createAccountAndAccept(event: React.FormEvent) {
     event.preventDefault();
     if (!invite) return;
+    const policyError = passwordPolicyError(password, invite.email);
+    if (policyError) {
+      setError(policyError);
+      return;
+    }
     setBusy(true);
     setError(null);
     const result = await signUp.email({
@@ -187,9 +198,8 @@ export function AcceptInviteExperience({ token }: { token: string }) {
             <Label htmlFor="invite-password" className="text-ink">
               Password
             </Label>
-            <Input
+            <PasswordInput
               id="invite-password"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -240,16 +250,18 @@ export function AcceptInviteExperience({ token }: { token: string }) {
             <Label htmlFor="invite-new-password" className="text-ink">
               Password
             </Label>
-            <Input
+            <PasswordInput
               id="invite-new-password"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={8}
+              minLength={PASSWORD_MIN_LENGTH}
               autoComplete="new-password"
               className="h-11 border-ink/15 bg-white/80"
             />
+            <p className="font-sans text-xs leading-relaxed text-muted-foreground">
+              {PASSWORD_POLICY_HINT}
+            </p>
           </div>
           <Button
             type="submit"

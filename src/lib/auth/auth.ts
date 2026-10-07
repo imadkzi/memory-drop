@@ -12,6 +12,7 @@ import {
   normalizeAuthEmail,
   recordFailedLogin,
 } from "@/lib/security/auth-lockout";
+import { passwordPolicyError } from "@/lib/security/password-policy";
 
 function emailFromBody(body: unknown) {
   if (!body || typeof body !== "object") return null;
@@ -25,7 +26,8 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    minPasswordLength: 8,
+    minPasswordLength: 12,
+    maxPasswordLength: 128,
   },
   secret: getEnv().BETTER_AUTH_SECRET,
   baseURL: getEnv().BETTER_AUTH_URL,
@@ -51,6 +53,20 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-up/email") {
+        const body =
+          ctx.body && typeof ctx.body === "object"
+            ? (ctx.body as { password?: unknown; email?: unknown })
+            : null;
+        const password = typeof body?.password === "string" ? body.password : "";
+        const email = typeof body?.email === "string" ? body.email : null;
+        const policyError = passwordPolicyError(password, email);
+        if (policyError) {
+          throw new APIError("BAD_REQUEST", { message: policyError });
+        }
+        return;
+      }
+
       if (ctx.path !== "/sign-in/email") return;
       const email = emailFromBody(ctx.body);
       if (!email) return;

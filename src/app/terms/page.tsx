@@ -48,8 +48,9 @@ export default function TermsPage() {
       <section>
         <h2>3. Accounts</h2>
         <p>
-          Registration asks for your name, email, and a password of at least 8
-          characters. You are responsible for that login and for what happens
+          Registration asks for your name, email, and a password of at least 12
+          characters that is not your email address or a common password. You are
+          responsible for that login and for what happens
           under it. Tell us at {LEGAL_CONTACT} if you believe someone else is
           using it.
         </p>
