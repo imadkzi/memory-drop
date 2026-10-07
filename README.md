@@ -24,12 +24,18 @@ Release notes: [CHANGELOG.md](CHANGELOG.md) · Upcoming work: [ROADMAP.md](ROADM
 cp .env.example .env
 ```
 
-2. Start Postgres (Docker optional — local Postgres also works):
+2. Start Redis. Postgres can stay on the local server you already use.
 
 ```bash
-docker compose up -d
-# or use an existing local Postgres matching DATABASE_URL
+# Mac, no Docker:
+brew install redis
+brew services start redis
+
+# Or, if you use Compose for Redis only (this does not start Postgres):
+docker compose up -d redis
 ```
+
+`REDIS_URL` stays `redis://localhost:6379` either way. `DATABASE_URL` keeps pointing at your local Postgres.
 
 3. Install, migrate, seed:
 
@@ -48,6 +54,8 @@ Seed credentials:
 - Password: `password123`
 
 Connect Google Drive from wedding settings before guest uploads will succeed.
+
+`GET /api/health` checks Postgres and Redis. Set `SENTRY_DSN` when you want server errors sent to Sentry. Production requires `REDIS_URL`.
 
 ## Scripts
 

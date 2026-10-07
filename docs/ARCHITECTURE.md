@@ -73,9 +73,10 @@ Platform users authenticate with Better Auth. Wedding access is always checked v
 - Encrypt Drive access/refresh tokens at rest (AES-256-GCM, `ENCRYPTION_KEY`)
 - Never expose OAuth secrets, refresh tokens, or raw upload tokens in logs or client code
 - Validate all inputs with Zod
-- Rate-limit guest upload session creation (in-memory sliding window; single-instance MVP)
-- Rate-limit admin sign-in / sign-up by IP (Better Auth; always enabled)
-- Lock email after 5 failed sign-ins in 15 minutes (in-memory; 15-minute lock)
+- Rate-limit guest uploads and admin sign-in in Redis (`REDIS_URL`). Without Redis, the process keeps its own counts.
+- Lock email after 5 failed sign-ins in 15 minutes (Redis when configured)
+- `GET /api/health` checks Postgres and Redis
+- Sentry receives server errors when `SENTRY_DSN` is set
 - Security headers via Next.js middleware/proxy
 - CSRF protection for cookie-authenticated admin mutations (Better Auth + same-site cookies)
 
@@ -88,7 +89,7 @@ MAX_VIDEO_SIZE_BYTES=1073741824 # 1 GB
 
 ## Local development
 
-- `docker-compose.yml` provides PostgreSQL (optional if local Postgres is available)
+- Local Postgres and Redis are enough. `docker-compose.yml` can start either service when you do not already run it on the host
 - Seed creates a development user + wedding **without** fake Drive credentials
 - Connect Google Drive explicitly via OAuth
 

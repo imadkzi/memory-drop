@@ -16,7 +16,18 @@ const envSchema = z.object({
   RATE_LIMIT_UPLOAD_PER_IP: z.coerce.number().int().positive().default(30),
   RATE_LIMIT_UPLOAD_PER_TOKEN: z.coerce.number().int().positive().default(60),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(10 * 60 * 1000),
+  REDIS_URL: z.string().min(1).optional(),
+  SENTRY_DSN: z.string().optional().default(""),
+  NEXT_PUBLIC_SENTRY_DSN: z.string().optional().default(""),
   NODE_ENV: z.enum(["development", "test", "production"]).optional().default("development"),
+}).superRefine((value, ctx) => {
+  if (value.NODE_ENV === "production" && !value.REDIS_URL) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["REDIS_URL"],
+      message: "REDIS_URL is required in production",
+    });
+  }
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -47,6 +47,16 @@ function write(level: LogLevel, message: string, fields?: LogFields) {
   const line = JSON.stringify(entry);
   if (level === "error") {
     console.error(line);
+    if (process.env.SENTRY_DSN) {
+      void import("@sentry/nextjs").then((Sentry) => {
+        const error = fields?.error;
+        if (error instanceof Error) {
+          Sentry.captureException(error, { extra: fields });
+          return;
+        }
+        Sentry.captureMessage(message, { level: "error", extra: fields });
+      });
+    }
   } else if (level === "warn") {
     console.warn(line);
   } else {

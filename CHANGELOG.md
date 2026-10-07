@@ -6,6 +6,11 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/). Versioning f
 
 ## [Unreleased]
 
+### Added
+
+- Redis for guest upload limits, sign-in rate limits, and email lockout. `REDIS_URL` is required in production.
+- `GET /api/health` reports Postgres and Redis. Sentry records server errors when `SENTRY_DSN` is set.
+
 ### Changed
 
 - Lightbox photos fill the viewer. Browser-friendly originals replace the preview once loaded; HEIC stays on a 4096px JPEG frame

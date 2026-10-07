@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
@@ -22,6 +23,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
+  serverExternalPackages: ["ioredis"],
   headers: async () => [
     {
       source: "/:path*",
@@ -39,4 +41,15 @@ const nextConfig: NextConfig = {
   ],
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  telemetry: false,
+  sourcemaps: {
+    disable: true,
+  },
+  webpack: {
+    autoInstrumentServerFunctions: true,
+    autoInstrumentMiddleware: false,
+    autoInstrumentAppDirectory: true,
+  },
+});

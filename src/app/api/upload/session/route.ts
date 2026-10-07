@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db/prisma";
 import { findWeddingByUploadToken } from "@/lib/weddings/upload-token";
 import { uploadSessionSchema } from "@/lib/validation/schemas";
 import { validateUploadFile } from "@/lib/validation/upload";
-import { checkRateLimit } from "@/lib/security/rate-limit";
+import { consumeRateLimit } from "@/lib/security/rate-limit";
 import { getEnv } from "@/lib/validation/env";
 import { getStorageForWedding } from "@/lib/storage";
 import { logger } from "@/lib/logging/logger";
@@ -31,12 +31,12 @@ export async function POST(request: Request) {
 
   const env = getEnv();
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  const ipLimit = checkRateLimit(
+  const ipLimit = await consumeRateLimit(
     `upload:ip:${ip}`,
     env.RATE_LIMIT_UPLOAD_PER_IP,
     env.RATE_LIMIT_WINDOW_MS,
   );
-  const tokenLimit = checkRateLimit(
+  const tokenLimit = await consumeRateLimit(
     `upload:token:${wedding.id}`,
     env.RATE_LIMIT_UPLOAD_PER_TOKEN,
     env.RATE_LIMIT_WINDOW_MS,

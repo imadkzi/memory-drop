@@ -6,12 +6,13 @@ import { prisma } from "@/lib/db/prisma";
 import { getEnv } from "@/lib/validation/env";
 import { logger } from "@/lib/logging/logger";
 import {
-  clearLoginFailures,
+  clearLockout,
   formatLockoutMessage,
-  getLockoutStatus,
   normalizeAuthEmail,
-  recordFailedLogin,
+  readLockout,
+  writeFailedLogin,
 } from "@/lib/security/auth-lockout";
+import { consumeRateLimit } from "@/lib/security/rate-limit";
 
 function emailFromBody(body: unknown) {
   if (!body || typeof body !== "object") return null;
@@ -30,14 +31,23 @@ export const auth = betterAuth({
   secret: getEnv().BETTER_AUTH_SECRET,
   baseURL: getEnv().BETTER_AUTH_URL,
   /**
-   * Built-in IP rate limits (memory). Special defaults also cap
-   * /sign-in and /sign-up at 3 requests / 10s; customRules add longer windows.
+   * IP rate limits stored in Redis when REDIS_URL is set.
+   * Special defaults also cap /sign-in and /sign-up at 3 requests / 10s;
+   * customRules add longer windows.
    */
   rateLimit: {
     enabled: true,
     window: 60,
     max: 100,
-    storage: "memory",
+    customStorage: {
+      async consume(key, rule) {
+        const result = await consumeRateLimit(key, rule.max, rule.window * 1000);
+        return {
+          allowed: result.allowed,
+          retryAfter: result.allowed ? null : rule.window,
+        };
+      },
+    },
     customRules: {
       "/sign-in/email": {
         window: 15 * 60,
@@ -55,7 +65,7 @@ export const auth = betterAuth({
       const email = emailFromBody(ctx.body);
       if (!email) return;
 
-      const status = getLockoutStatus(email);
+      const status = await readLockout(email);
       if (status.locked && status.retryAfterSec) {
         logger.warn("auth_login_locked", {
           email,
@@ -72,11 +82,11 @@ export const auth = betterAuth({
       if (!email) return;
 
       if (ctx.context.newSession) {
-        clearLoginFailures(email);
+        await clearLockout(email);
         return;
       }
 
-      const status = recordFailedLogin(email);
+      const status = await writeFailedLogin(email);
       if (status.locked && status.retryAfterSec) {
         logger.warn("auth_login_lockout_triggered", {
           email,

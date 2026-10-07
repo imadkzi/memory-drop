@@ -25,8 +25,8 @@ Work that should land before trusting the app with a real wedding day.
 - [x] Keep `/api` (especially uploads) out of `proxy.ts` matcher so large guest files are not body-buffered/truncated
 - [ ] Raise day-of upload rate limits via env (venue WiFi often shares one IP; defaults are too tight for ~20 guests)
 - [x] Phone smoke test on the production URL (photo + video, cellular and WiFi)
-- [ ] Health check + structured error monitoring (e.g. Sentry)
-- [ ] Replace in-memory upload rate limit with shared store (Redis) for multi-instance — skip while on a single replica
+- [x] Health check (`GET /api/health`) + Sentry when `SENTRY_DSN` is set
+- [x] Redis for upload rate limits, sign-in rate limits, and email lockout (`REDIS_URL`; required in production)
 - [ ] Backup / restore story for Postgres metadata (Drive files stay in the owner’s Drive)
 
 ### Admin completeness

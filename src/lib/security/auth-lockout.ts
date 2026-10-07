@@ -1,7 +1,9 @@
 /**
- * In-memory email lockout after repeated failed sign-ins.
- * Single-instance MVP — replace with Redis/DB when scaling horizontally.
+ * Email lockout after repeated failed sign-ins.
+ * Redis is used when REDIS_URL is set; otherwise this process keeps the counts.
  */
+import { logger } from "@/lib/logging/logger";
+import { assertRedisReady, getRedis } from "@/lib/redis";
 
 export const AUTH_LOCKOUT = {
   maxFailures: 5,
@@ -106,6 +108,89 @@ export function clearLoginFailures(email: string) {
 /** Test helper */
 export function resetAuthLockouts() {
   locks.clear();
+}
+
+const failKey = (email: string) => `auth:fail:${email}`;
+const lockKey = (email: string) => `auth:lock:${email}`;
+
+export async function readLockout(email: string): Promise<LockoutStatus> {
+  const key = normalizeAuthEmail(email);
+  if (!getRedis() || !key) return getLockoutStatus(email);
+
+  try {
+    const redis = await assertRedisReady();
+    const [ttl, rawFailures] = await Promise.all([
+      redis.pttl(lockKey(key)),
+      redis.get(failKey(key)),
+    ]);
+    const failures = Number(rawFailures ?? 0);
+    if (ttl > 0) {
+      return {
+        locked: true,
+        failures,
+        retryAfterSec: Math.max(1, Math.ceil(ttl / 1000)),
+      };
+    }
+    return { locked: false, failures };
+  } catch (error) {
+    logger.warn("redis_lockout_read_failed", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
+    return getLockoutStatus(email);
+  }
+}
+
+export async function writeFailedLogin(email: string): Promise<LockoutStatus> {
+  const key = normalizeAuthEmail(email);
+  if (!getRedis() || !key) return recordFailedLogin(email);
+
+  try {
+    const redis = await assertRedisReady();
+    const existingTtl = await redis.pttl(lockKey(key));
+    if (existingTtl > 0) {
+      const failures = Number((await redis.get(failKey(key))) ?? 0);
+      return {
+        locked: true,
+        failures,
+        retryAfterSec: Math.max(1, Math.ceil(existingTtl / 1000)),
+      };
+    }
+
+    const failures = await redis.incr(failKey(key));
+    if (failures === 1 || (await redis.pttl(failKey(key))) < 0) {
+      await redis.pexpire(failKey(key), AUTH_LOCKOUT.failureWindowMs);
+    }
+
+    if (failures >= AUTH_LOCKOUT.maxFailures) {
+      await redis.set(lockKey(key), "1", "PX", AUTH_LOCKOUT.lockoutMs);
+      return {
+        locked: true,
+        failures,
+        retryAfterSec: Math.ceil(AUTH_LOCKOUT.lockoutMs / 1000),
+      };
+    }
+
+    return { locked: false, failures };
+  } catch (error) {
+    logger.warn("redis_lockout_write_failed", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
+    return recordFailedLogin(email);
+  }
+}
+
+export async function clearLockout(email: string) {
+  const key = normalizeAuthEmail(email);
+  clearLoginFailures(email);
+  if (!getRedis() || !key) return;
+  try {
+    const redis = await assertRedisReady();
+    await redis.del(failKey(key), lockKey(key));
+  } catch (error) {
+    logger.warn("redis_lockout_clear_failed", {
+      error: error instanceof Error ? error.message : "unknown",
+    });
+  }
 }
 
 export function formatLockoutMessage(retryAfterSec: number) {
