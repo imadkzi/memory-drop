@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { m } from "motion/react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 type Item = {
   id: string;
@@ -204,6 +206,7 @@ export function MediaGallery({
   type?: "PHOTO" | "VIDEO";
   listView?: boolean;
 }) {
+  const reduced = usePrefersReducedMotion();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [checked, setChecked] = useState<Set<string>>(new Set());
@@ -553,7 +556,7 @@ export function MediaGallery({
       )}
 
       {!visibleItems.length ? (
-        <div className="rounded-2xl border border-dashed border-ink/15 bg-white/50 px-6 py-20 text-center">
+        <div className="border border-dashed border-ink/15 px-6 py-20 text-center">
           <p className="font-serif text-2xl text-ink">No memories yet</p>
           <p className="mt-2 font-sans text-muted-foreground">
             Guest uploads will appear here privately.
@@ -563,8 +566,19 @@ export function MediaGallery({
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {visibleItems.map((item, index) => {
             const isChecked = checked.has(item.id);
+            const animateIn = index < 6 && !reduced;
             return (
-              <div key={item.id} className="group relative">
+              <m.div
+                key={item.id}
+                className="group relative"
+                initial={animateIn ? { opacity: 0 } : false}
+                animate={{ opacity: 1 }}
+                transition={
+                  animateIn
+                    ? { duration: 0.3, delay: index * 0.04, ease: "easeOut" }
+                    : { duration: 0 }
+                }
+              >
                 <button
                   type="button"
                   onClick={() => {
@@ -604,7 +618,7 @@ export function MediaGallery({
                 >
                   {isChecked ? "✓" : ""}
                 </button>
-              </div>
+              </m.div>
             );
           })}
         </div>

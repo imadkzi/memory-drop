@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export function Polaroid({
   src,
@@ -6,15 +7,24 @@ export function Polaroid({
   className,
   caption,
   priority = false,
+  frame = "default",
 }: {
   src: string;
   alt: string;
   className?: string;
   caption?: string;
   priority?: boolean;
+  /** Slimmer white border: good for small floating accents */
+  frame?: "default" | "slim";
 }) {
   return (
-    <figure className={`polaroid ${className ?? ""}`}>
+    <figure
+      className={cn(
+        "polaroid",
+        frame === "slim" && "polaroid-slim",
+        className,
+      )}
+    >
       <div className="relative aspect-[4/5] overflow-hidden bg-blush-soft">
         <Image
           src={src}

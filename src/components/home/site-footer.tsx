@@ -10,23 +10,23 @@ export function SiteFooter() {
         </Link>
         <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-white/55">
           <a href="#story" className="hover:text-white">
-            The idea
+            The Idea
           </a>
           <a href="#flow" className="hover:text-white">
-            The flow
+            The Flow
           </a>
-            <Link href="/privacy" className="hover:text-white">
-              Privacy policy
-            </Link>
-            <Link href="/terms" className="hover:text-white">
-              Terms
-            </Link>
+          <Link href="/privacy" className="hover:text-white">
+            Privacy policy
+          </Link>
+          <Link href="/terms" className="hover:text-white">
+            Terms
+          </Link>
           <a href="mailto:hello@imadkazi.co.uk" className="hover:text-white">
             Contact
           </a>
         </nav>
-        <p className="text-sm text-white/40">
-          Private wedding photo &amp; video collection
+        <p className="text-sm text-white/55">
+          Private event photo &amp; video collection
         </p>
       </div>
     </footer>

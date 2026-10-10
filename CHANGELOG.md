@@ -11,10 +11,37 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/). Versioning f
 - Redis for guest upload limits, sign-in rate limits, and email lockout. `REDIS_URL` is required in production.
 - `GET /api/health` reports Postgres and Redis. Sentry records server errors when `SENTRY_DSN` is set.
 
+## [0.1.2] — 2026-10-10
+
+Marketing redesign and SEO pass merged to main (`feat/redesign`), plus lightbox playback improvements from 0.1.1.
+
+### Added
+
+- Motion-based marketing reveals with `prefers-reduced-motion` support (`motion`, lazy `MotionProvider`)
+- Parallax / drift accents on the hero (desktop); floral layer and polaroid motion split into `hero-effects`
+- Named brand and photo asset folders (`/brand`, `/photos`, `/florals`, `/icons`) plus web app icons and `site.webmanifest`
+- Generated Open Graph and Twitter share images (`opengraph-image`, `twitter-image`)
+- JSON-LD for the marketing site (`src/components/seo/json-ld.tsx`) and shared `siteConfig` (`src/lib/site.ts`)
+- `llms.txt`, `.well-known/security.txt`, branded favicons / apple touch icon
+- Custom `not-found` page aligned to the brand
+- Invite and upload route layouts for consistent chrome
+- Lighthouse helper script for local performance checks (`scripts/run-lighthouse.mjs`)
+- New flow / guest-phone marketing photos for the homepage story
+
 ### Changed
+
+- Homepage, guest upload, and admin surfaces restyled: quieter borders, less card chrome, Phosphor where useful
+- Marketing copy and admin dashboard lean toward **events** (not only weddings) while keeping wedding-ready UX
+- Hero florals render on mobile as well as desktop
+- `next/image` quality allow-list and package-import optimization for Phosphor icons
+- Legal pages and robots/sitemap wired through the shared site URL helper
+
+### Fixed
 
 - Lightbox photos fill the viewer. Browser-friendly originals replace the preview once loaded; HEIC stays on a 4096px JPEG frame
 - Lightbox videos start from byte ranges (file head and tail) instead of waiting on a full download
+
+---
 
 ## [0.1.1] — 2026-10-07
 
@@ -104,5 +131,5 @@ First production-shaped MVP: private wedding collections, guest upload-only link
 
 - Open self-registration; no email verification or 2FA (login rate limiting and lockout landed in 0.1.1)
 - No delete-wedding UI; Drive disconnect UX incomplete relative to role matrix
-- Large originals still slow if downloaded; lightbox uses Drive thumbnails for view speed
+- Large video originals can still feel slow in the lightbox on poor networks (byte-range playback landed in 0.1.2)
 - Not production-hardened for multi-instance rate limits or Google OAuth app verification

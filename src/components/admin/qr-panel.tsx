@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { m } from "motion/react";
 import { Download, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 export function QrPanel({
   weddingId,
@@ -13,6 +15,7 @@ export function QrPanel({
   initialDataUrl?: string | null;
   initialError?: string | null;
 }) {
+  const reduced = usePrefersReducedMotion();
   const [dataUrl, setDataUrl] = useState<string | null>(initialDataUrl ?? null);
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [loading, setLoading] = useState(false);
@@ -35,12 +38,17 @@ export function QrPanel({
     if (!dataUrl) return;
     const anchor = document.createElement("a");
     anchor.href = dataUrl;
-    anchor.download = `wedding-${weddingId}-qr.png`;
+    anchor.download = `event-${weddingId}-qr.png`;
     anchor.click();
   }
 
   return (
-    <>
+    <m.div
+      initial={reduced ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
+      <div className="chapter-rule mb-5 bg-ink" />
       <h2 className="font-serif text-2xl tracking-tight text-ink">The code</h2>
       <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">
         Print it, frame it or leave it on a table. Guests can scan and share.
@@ -52,7 +60,12 @@ export function QrPanel({
 
       {dataUrl ? (
         <div className="mt-8">
-          <figure className="mx-auto flex w-fit flex-col items-center rounded-xl border border-ink/8 bg-white p-4 shadow-[0_12px_32px_-20px_rgba(40,20,20,0.35)]">
+          <m.figure
+            className="mx-auto flex w-fit flex-col items-center border border-ink/10 bg-white p-4"
+            initial={reduced ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={dataUrl}
@@ -62,7 +75,7 @@ export function QrPanel({
             <figcaption className="mt-2 text-center font-sans text-[11px] tracking-wide text-ink/40">
               Scan to upload
             </figcaption>
-          </figure>
+          </m.figure>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button
               type="button"
@@ -96,6 +109,6 @@ export function QrPanel({
           </Button>
         )
       )}
-    </>
+    </m.div>
   );
 }

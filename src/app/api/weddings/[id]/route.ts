@@ -17,12 +17,12 @@ export async function GET(_request: Request, context: Ctx) {
   const membership = await requireWeddingAccess(session.user.id, id);
   if (!membership) {
     logger.warn("permission_denied", { userId: session.user.id, weddingId: id, action: "get" });
-    return NextResponse.json({ error: "Wedding not found." }, { status: 404 });
+    return NextResponse.json({ error: "Event not found." }, { status: 404 });
   }
 
   const wedding = await prisma.wedding.findUnique({ where: { id } });
   if (!wedding) {
-    return NextResponse.json({ error: "Wedding not found." }, { status: 404 });
+    return NextResponse.json({ error: "Event not found." }, { status: 404 });
   }
 
   return NextResponse.json({
@@ -44,7 +44,7 @@ export async function PATCH(request: Request, context: Ctx) {
   }
   const membership = await requireWeddingAccess(session.user.id, id);
   if (!membership) {
-    return NextResponse.json({ error: "Wedding not found." }, { status: 404 });
+    return NextResponse.json({ error: "Event not found." }, { status: 404 });
   }
 
   const body = await request.json();

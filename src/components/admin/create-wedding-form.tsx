@@ -23,7 +23,7 @@ export function CreateWeddingForm() {
     });
     const json = await res.json();
     if (!res.ok) {
-      setError(json.error ?? "We couldn't create this wedding.");
+      setError(json.error ?? "We couldn't create this event.");
       setLoading(false);
       return;
     }
@@ -34,9 +34,8 @@ export function CreateWeddingForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="rounded-2xl border border-ink/8 bg-white/95 p-6 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.25)] sm:p-8"
+      className="surface-panel p-6 sm:p-8"
     >
-      <div className="chapter-rule mb-5 bg-bloom" />
       <h2 className="font-serif text-2xl tracking-tight text-ink">New collection</h2>
       <p className="mt-2 font-sans text-sm text-muted-foreground">
         Name the day. You can set the event date and connect Drive next.
@@ -45,9 +44,9 @@ export function CreateWeddingForm() {
         <div className="min-w-0 flex-1 space-y-2">
           <Label
             htmlFor="wedding-name"
-            className="font-sans text-[11px] tracking-[0.18em] text-ink/45 uppercase"
+            className="font-sans text-sm text-ink/55"
           >
-            Wedding name
+            Event name
           </Label>
           <Input
             id="wedding-name"

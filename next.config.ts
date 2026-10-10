@@ -16,12 +16,18 @@ const nextConfig: NextConfig = {
   compress: true,
   images: {
     formats: ["image/avif", "image/webp"],
+    // Explicit allow-list for next/image `quality` props used in the app
+    qualities: [70, 72, 75, 78, 85],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   experimental: {
-    optimizePackageImports: ["lucide-react"],
+    optimizePackageImports: [
+      "lucide-react",
+      "@phosphor-icons/react",
+      "@phosphor-icons/react/dist/ssr",
+    ],
   },
   serverExternalPackages: ["ioredis"],
   headers: async () => [

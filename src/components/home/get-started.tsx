@@ -1,22 +1,31 @@
+"use client";
+
 import Link from "next/link";
+import { m } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 export function GetStarted() {
+  const reduced = usePrefersReducedMotion();
+
   return (
-    <section className="light-wash relative overflow-hidden">
+    <section className="relative overflow-hidden border-t border-ink/8 bg-[#f5e6df] paper-grain">
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-start gap-8 px-6 py-16 md:flex-row md:items-center md:justify-between md:px-8 md:py-20">
-        <Reveal className="max-w-lg">
-          <h2 className="mt-3 font-serif text-3xl tracking-tight text-ink sm:text-4xl">
+        <div className="max-w-lg">
+          <div className="chapter-rule mb-5 bg-ink" />
+          <h2 className="font-serif text-3xl tracking-tight text-ink sm:text-4xl">
             Create your collection today.
           </h2>
-          <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-base leading-relaxed text-ink/65">
             It takes less than a minute to set up.
           </p>
-        </Reveal>
-        <Reveal
-          delayMs={100}
+        </div>
+        <m.div
           className="flex flex-col items-start gap-3 sm:items-end"
+          initial={reduced ? false : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <Button
             nativeButton={false}
@@ -24,7 +33,7 @@ export function GetStarted() {
             size="lg"
             className="h-14 bg-bloom px-10 text-base font-medium text-white hover:bg-bloom/90 sm:h-16 sm:px-12 sm:text-lg"
           >
-            Open your collection →
+            Open your collection
           </Button>
           <Link
             href="/upload/demo"
@@ -32,7 +41,7 @@ export function GetStarted() {
           >
             Or try the guest view
           </Link>
-        </Reveal>
+        </m.div>
       </div>
     </section>
   );
