@@ -1,6 +1,6 @@
 # Roadmap
 
-Living plan for Memory Drop after the `0.1.0` MVP. Ordered by what unblocks real weddings first, then scale and product expansion.
+Living plan for Memory Drop after the `0.1.0` MVP. Ordered by what unblocks real events first, then scale and product expansion.
 
 See also: [CHANGELOG.md](./CHANGELOG.md) · [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
@@ -8,16 +8,16 @@ See also: [CHANGELOG.md](./CHANGELOG.md) · [docs/ARCHITECTURE.md](./docs/ARCHIT
 
 ## Now — ship-ready hardening
 
-Work that should land before trusting the app with a real wedding day.
+Work that should land before trusting the app with a real wedding / event day.
 
 ### Auth & access
 
 - [x] Login / signup rate limiting and basic lockout
-- [ ] Email verification before creating weddings
+- [ ] Email verification before creating events (or invite-only registration)
 - [x] Stronger password policy: 12+ characters, not the account email, not a common password. Existing passwords still sign in.
 - [ ] Forgot password, once the app can send email. No public reset link before then: anyone who knows the address could take the account.
 - [ ] Optional 2FA for owners
-- [x] Leave self-signup open until email verification. No invite-code gate while new couples should still be able to register. After verification exists, an unverified account cannot create a wedding.
+- [x] Leave self-signup open until email verification. No invite-code gate while new couples should still be able to register. After verification exists, an unverified account cannot create an event.
 
 ### Reliability & ops
 
@@ -33,11 +33,12 @@ Work that should land before trusting the app with a real wedding day.
 ### Admin completeness
 
 - [ ] Disconnect Google Drive (owner) with clear UX when uploads would fail
-- [ ] Delete wedding (owner) — soft-delete metadata; document Drive folder behaviour
+- [ ] Delete event / wedding (owner) — soft-delete metadata; document Drive folder behaviour
 - [x] Bulk download as zip (or async zip job) for selected / all media
 - [x] Clear empty / error states when Drive is not connected before first guest upload
 - [x] Brand Drive root folder as `Memory Drop` for newly connected accounts
 - [x] Prefetch / cache large previews more aggressively for gallery + lightbox
+- [x] Lightbox photos use originals (with HEIC fallback); videos start via byte ranges
 
 ### Guest experience
 
@@ -74,19 +75,20 @@ Work that should land before trusting the app with a real wedding day.
 
 - [x] Privacy policy and terms, linked from the homepage, signup, and guest upload
 - [x] Performance / SEO baseline: WebP assets, font swap, robots + sitemap, Open Graph metadata
-- [ ] Dedicated OG / social share image (beyond floral asset)
-- [ ] Real photo assets pipeline for landing (licensed wedding photography)
+- [x] Dedicated OG / Twitter share images and JSON-LD
+- [x] Marketing redesign with Motion, quieter admin chrome, organized brand/photo/icon assets
+- [ ] Real photo assets pipeline for landing (licensed photography beyond current set)
 - [ ] Pricing / waitlist page if going commercial
 
 ---
 
 ## Later — platform
 
-Out of MVP scope; revisit when core weddings are stable.
+Out of MVP scope; revisit when core events are stable.
 
 - [ ] Alternate storage providers (S3, Cloudflare R2) behind `StorageProvider`
 - [ ] Multi-event packages (engagement + wedding + brunch)
-- [ ] Planner agency accounts (many weddings under one org)
+- [ ] Planner agency accounts (many events under one org)
 - [ ] Payments / subscriptions
 - [ ] Native share sheet / PWA install for guests
 - [ ] Public guest gallery (explicitly opt-in — breaks current product principle)
@@ -108,7 +110,8 @@ Out of MVP scope; revisit when core weddings are stable.
 | Version | Theme |
 |---|---|
 | **0.1.1** | Shipped 2026-10-07: auth lockout, copyable invites, zip download, legal pages, Railway deploy, upload proxy fix, gallery paging |
-| **0.2.0** | Day-of polish (print QR, Drive disconnect/delete, checklist) |
+| **0.1.2** | Shipped 2026-10-10: marketing redesign + Motion, brand/SEO assets, OG images, lightbox byte-range / full photo playback |
+| **0.2.0** | Day-of polish (print QR, Drive disconnect/delete, checklist, raise upload rate limits) |
 | **0.3.0** | Email invites + activity log + media tooling |
 | **1.0.0** | Production-trusted: verified OAuth, monitoring, shared rate limits, closed signup |
 
