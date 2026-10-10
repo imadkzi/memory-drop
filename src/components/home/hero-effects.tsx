@@ -46,7 +46,7 @@ export function HeroFlorals() {
   return (
     <div
       ref={sectionRef}
-      className="pointer-events-none absolute inset-0 z-[1] hidden md:block"
+      className="pointer-events-none absolute inset-0 z-[1]"
     >
       {ready ? (
         <m.div
