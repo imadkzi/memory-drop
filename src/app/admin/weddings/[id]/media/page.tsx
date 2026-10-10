@@ -50,18 +50,18 @@ export default async function WeddingMediaPage({ params, searchParams }: Props) 
   }));
 
   return (
-    <div className="rounded-2xl border border-ink/8 bg-white/95 p-6 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.25)] sm:p-8 lg:p-10">
-      <div>
+    <div className="space-y-8">
+      <header className="border-b border-ink/10 pb-8">
         <h1 className="font-serif text-4xl tracking-tight text-ink">
           Photos &amp; Videos
         </h1>
-        <p className="mt-2 max-w-lg font-sans text-muted-foreground">
+        <p className="mt-2 max-w-lg font-sans text-ink/60">
           All uploads from your guests, saved directly to your Google Drive.
         </p>
-      </div>
+      </header>
 
       {!driveConnected ? (
-        <div className="mt-6 rounded-2xl border border-bloom/20 bg-bloom-soft/70 px-5 py-4">
+        <div className="border border-bloom/25 bg-bloom-soft/50 px-5 py-4">
           <p className="font-sans text-sm font-medium text-ink">
             Google Drive is not connected
           </p>

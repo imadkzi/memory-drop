@@ -110,52 +110,38 @@
   }
 }
 
-@keyframes fade-rise {
+@keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
+/* Hero only — opacity, no slide-up stamp */
 .animate-fade-rise {
-  animation: fade-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fade-in 0.55s ease-out both;
 }
 
 .animate-fade-rise-delay {
-  animation: fade-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+  animation: fade-in 0.55s ease-out 0.08s both;
 }
 
 .animate-fade-rise-late {
-  animation: fade-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
-}
-
-/* Scroll-triggered reveals */
-.reveal-base {
-  opacity: 0;
-  transform: translateY(22px);
-  transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal-visible {
-  opacity: 1;
-  transform: translateY(0);
+  animation: fade-in 0.55s ease-out 0.14s both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal-base,
   .animate-fade-rise,
   .animate-fade-rise-delay,
   .animate-fade-rise-late {
     opacity: 1;
-    transform: none;
     animation: none;
-    transition: none;
+  }
+
+  .motion-safe-only {
+    display: none !important;
   }
 }
 
@@ -165,31 +151,72 @@
 }
 
 .cinema-wash {
-  background:
-    radial-gradient(ellipse 55% 60% at 12% 35%, oklch(0.42 0.14 12 / 0.8), transparent 62%),
-    radial-gradient(ellipse 50% 55% at 88% 42%, oklch(0.7 0.1 80 / 0.5), transparent 58%),
-    radial-gradient(ellipse 45% 40% at 48% 80%, oklch(0.5 0.1 18 / 0.42), transparent 55%),
-    linear-gradient(160deg, oklch(0.18 0.035 18), oklch(0.24 0.045 20) 48%, oklch(0.16 0.03 22));
+  background: linear-gradient(
+    165deg,
+    oklch(0.2 0.04 18),
+    oklch(0.17 0.03 22) 100%
+  );
 }
 
 .privacy-shell {
-  background: oklch(0.45 0.05 18);
+  background: oklch(0.42 0.045 18);
   color: oklch(0.98 0.01 50);
 }
 
 .privacy-wash {
-  background:
-    radial-gradient(ellipse 60% 55% at 15% 30%, oklch(0.55 0.05 16 / 0.4), transparent 60%),
-    radial-gradient(ellipse 50% 50% at 88% 40%, oklch(0.58 0.04 80 / 0.25), transparent 55%),
-    radial-gradient(ellipse 45% 40% at 50% 85%, oklch(0.52 0.04 25 / 0.28), transparent 55%),
-    linear-gradient(165deg, oklch(0.46 0.05 16), oklch(0.5 0.045 20) 50%, oklch(0.44 0.05 18));
+  background: oklch(0.42 0.045 18);
 }
 
+/* Quiet paper — no radial orbs */
 .light-wash {
+  background: oklch(0.985 0.008 50);
+}
+
+.paper-warm {
+  background: oklch(0.965 0.014 45);
+}
+
+/* Subtle Shiro-like paper grain — keep opacity low */
+.paper-grain {
+  position: relative;
+  isolation: isolate;
+}
+
+.paper-grain::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.paper-grain > * {
+  position: relative;
+  z-index: 1;
+}
+
+.paper-band {
   background:
-    radial-gradient(ellipse 70% 50% at 80% 0%, oklch(0.92 0.035 15 / 0.55), transparent 55%),
-    radial-gradient(ellipse 55% 40% at 0% 100%, oklch(0.93 0.035 85 / 0.4), transparent 50%),
-    linear-gradient(180deg, oklch(0.975 0.012 50), oklch(0.955 0.016 45));
+    linear-gradient(
+      180deg,
+      oklch(0.97 0.012 45) 0%,
+      oklch(0.955 0.016 42) 100%
+    );
+}
+
+.surface-panel {
+  border: 1px solid oklch(0.22 0.03 35 / 0.1);
+  background: oklch(0.995 0.004 50);
+  border-radius: 0.5rem;
+}
+
+.surface-panel-muted {
+  border: 1px solid oklch(0.22 0.03 35 / 0.1);
+  background: oklch(0.975 0.01 48);
+  border-radius: 0.5rem;
 }
 
 .polaroid {

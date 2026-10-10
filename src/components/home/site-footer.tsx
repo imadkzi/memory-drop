@@ -15,12 +15,12 @@ export function SiteFooter() {
           <a href="#flow" className="hover:text-white">
             The flow
           </a>
-            <Link href="/privacy" className="hover:text-white">
-              Privacy policy
-            </Link>
-            <Link href="/terms" className="hover:text-white">
-              Terms
-            </Link>
+          <Link href="/privacy" className="hover:text-white">
+            Privacy policy
+          </Link>
+          <Link href="/terms" className="hover:text-white">
+            Terms
+          </Link>
           <a href="mailto:hello@imadkazi.co.uk" className="hover:text-white">
             Contact
           </a>

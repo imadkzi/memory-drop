@@ -36,24 +36,24 @@ export default async function WeddingSharingPage({ params }: Props) {
   }
 
   return (
-    <div className="rounded-2xl border border-ink/8 bg-white/95 p-6 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.25)] sm:p-8 lg:p-10">
-      <p className="font-sans text-[11px] tracking-[0.28em] text-bloom uppercase">
-        For your guests
-      </p>
-      <h1 className="mt-3 font-serif text-4xl tracking-tight text-ink sm:text-5xl">
-        Link &amp; Sharing
-      </h1>
-      <p className="mt-4 max-w-xl font-sans text-base leading-relaxed text-muted-foreground">
-        Give your guests a simple, private way to share their photos and videos.
-        Pass the link or QR code — they can upload, then leave.
-      </p>
+    <div className="space-y-10">
+      <header className="border-b border-ink/10 pb-8">
+        <div className="chapter-rule mb-5 bg-ink" />
+        <h1 className="font-serif text-4xl tracking-tight text-ink sm:text-5xl">
+          Link &amp; Sharing
+        </h1>
+        <p className="mt-3 max-w-xl font-sans text-base leading-relaxed text-ink/60">
+          Give your guests a simple, private way to share their photos and videos.
+          Pass the link or QR code; they can upload, then leave.
+        </p>
+      </header>
 
-      <div className="mt-10 grid gap-5 lg:grid-cols-2 lg:gap-6">
-        <section className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-7">
+      <div className="grid gap-10 pt-2 lg:grid-cols-2 lg:gap-12">
+        <section>
           <h2 className="font-serif text-2xl tracking-tight text-ink">
             The link
           </h2>
-          <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-3 font-sans text-sm leading-relaxed text-ink/60">
             Drop it on a sign, an invitation, or a quiet message. Anyone with it
             can upload photos and videos directly to your collection.
           </p>
@@ -66,7 +66,7 @@ export default async function WeddingSharingPage({ params }: Props) {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-7">
+        <section className="border-t border-ink/10 pt-10 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
           <QrPanel
             weddingId={id}
             initialDataUrl={qrDataUrl}

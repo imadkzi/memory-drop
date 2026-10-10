@@ -133,11 +133,8 @@ export function AcceptInviteExperience({ token }: { token: string }) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <div className="chapter-rule mx-auto mb-5 bg-bloom" />
-        <p className="font-sans text-[11px] tracking-[0.28em] text-bloom uppercase">
-          Admin invite
-        </p>
-        <h1 className="mt-3 font-serif text-3xl tracking-tight text-ink">
+        <p className="font-sans text-sm text-bloom">Admin invite</p>
+        <h1 className="mt-2 font-serif text-3xl tracking-tight text-ink">
           {invite.weddingName}
         </h1>
         <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">

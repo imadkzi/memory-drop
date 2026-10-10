@@ -47,28 +47,19 @@ function MemberCard({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-white px-4 py-4 sm:px-5">
-      <div className="flex min-w-0 items-center gap-4">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-bloom-soft font-serif text-sm text-bloom">
-          {initials(admin.name) || "·"}
-        </div>
-        <div className="min-w-0">
-          <p className="truncate font-serif text-xl tracking-tight text-ink">
-            {admin.name}
-          </p>
-          <p className="mt-0.5 truncate font-sans text-sm text-muted-foreground">
-            {admin.email}
-          </p>
-          <p className="mt-1.5 font-sans text-[11px] tracking-[0.2em] text-ink/40 uppercase">
-            {admin.role}
-          </p>
-        </div>
+    <div className="flex items-center justify-between gap-4 py-4">
+      <div className="min-w-0">
+        <p className="truncate font-serif text-xl tracking-tight text-ink">
+          {admin.name}
+        </p>
+        <p className="mt-0.5 truncate font-sans text-sm text-ink/55">
+          {admin.email}
+        </p>
+        <p className="mt-1 font-sans text-xs text-ink/40">{admin.role}</p>
       </div>
       <div className="flex shrink-0 items-center gap-3">
         {action}
-        <span className="rounded-full bg-bloom-soft px-3 py-1 font-sans text-xs font-medium text-bloom">
-          {badge}
-        </span>
+        <span className="font-sans text-xs font-medium text-bloom">{badge}</span>
       </div>
     </div>
   );
@@ -182,8 +173,6 @@ export function AdminManager({
 
   return (
     <div className="space-y-8">
-      <SectionRule />
-
       <section>
         <h2 className="font-serif text-2xl tracking-tight text-ink">
           Who can see
@@ -211,7 +200,7 @@ export function AdminManager({
           </p>
           <form
             onSubmit={createInvite}
-            className="mt-5 rounded-2xl bg-bloom-soft/70 px-5 py-5"
+            className="mt-5 border border-bloom/20 bg-bloom-soft/50 px-5 py-5"
           >
             <Label
               htmlFor="admin-email"
@@ -246,7 +235,7 @@ export function AdminManager({
           </form>
 
           {inviteUrl ? (
-            <div className="mt-4 space-y-3 rounded-2xl border border-ink/10 bg-white px-4 py-4">
+            <div className="mt-4 space-y-3 border border-ink/10 bg-white px-4 py-4">
               <p className="font-sans text-[11px] tracking-[0.18em] text-ink/45 uppercase">
                 Invite link
               </p>
@@ -284,11 +273,11 @@ export function AdminManager({
             <h2 className="font-serif text-2xl tracking-tight text-ink">
               Pending invites
             </h2>
-            <ul className="mt-6 space-y-3">
+            <ul className="mt-6 divide-y divide-ink/10 border-t border-ink/10">
               {pendingInvites.map((invite) => (
                 <li
                   key={invite.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-ink/10 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+                  className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="truncate font-serif text-xl tracking-tight text-ink">

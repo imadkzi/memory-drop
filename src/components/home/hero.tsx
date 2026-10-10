@@ -1,17 +1,43 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { m, useScroll, useTransform } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/home/brand-mark";
 import { GuestCard } from "@/components/home/guest-card";
 import { photos } from "@/components/home/photos";
 import { Polaroid } from "@/components/home/polaroid";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduced = usePrefersReducedMotion();
+  const [desktop, setDesktop] = useState(false);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const floralY = useTransform(scrollYProgress, [0, 1], [0, 48]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   return (
-    <section className="relative flex min-h-[78svh] flex-col overflow-hidden bg-[#f5e6df] text-ink">
-      <div
+    <section
+      ref={sectionRef}
+      className="relative flex min-h-[78svh] flex-col overflow-hidden bg-[#f5e6df] text-ink"
+    >
+      <m.div
         className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
         aria-hidden
+        style={reduced || !desktop ? undefined : { y: floralY }}
       >
         <Image
           src="/floral-asset.webp"
@@ -34,7 +60,7 @@ export function Hero() {
           loading="lazy"
           quality={70}
         />
-      </div>
+      </m.div>
 
       <header className="relative z-20 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5 md:px-8">
         <Link href="/" className="inline-flex items-center">
@@ -67,19 +93,34 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 content-center gap-12 px-6 py-10 md:grid-cols-[1.05fr_0.95fr] md:items-center md:gap-10 md:px-8 md:py-14">
         <div>
-          <h1 className="animate-fade-rise mt-4 font-serif text-5xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+          <m.h1
+            className="mt-4 font-serif text-5xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl"
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+          >
             Collect every photo your guests take.
-          </h1>
-          <p className="animate-fade-rise-delay mt-6 max-w-md text-base leading-relaxed text-ink/70 sm:text-lg">
+          </m.h1>
+          <m.p
+            className="mt-6 max-w-md text-base leading-relaxed text-ink/70 sm:text-lg"
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.55, ease: "easeOut", delay: 0.08 }}
+          >
             One link for the wedding. Guests add what they captured, and the
             whole day ends up in a single collection.
-          </p>
-          <div className="animate-fade-rise-late mt-10 flex flex-wrap gap-4">
+          </m.p>
+          <m.div
+            className="mt-10 flex flex-wrap gap-4"
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.55, ease: "easeOut", delay: 0.14 }}
+          >
             <Button
               nativeButton={false}
               render={<Link href="/admin/login" />}
               size="lg"
-              className="h-14 border border-bloom bg-bloom px-8 text-base font-semibold text-white shadow-[0_12px_30px_-14px_rgba(80,30,40,0.45)] hover:bg-bloom/90 hover:text-white sm:h-16 sm:px-10 sm:text-lg"
+              className="h-14 border border-bloom bg-bloom px-8 text-base font-semibold text-white hover:bg-bloom/90 hover:text-white sm:h-16 sm:px-10 sm:text-lg"
             >
               Open your collection
             </Button>
@@ -88,30 +129,37 @@ export function Hero() {
               render={<Link href="/upload/demo" />}
               variant="outline"
               size="lg"
-              className="h-14 border-2 border-ink/70 bg-transparent px-8 text-base font-semibold text-ink hover:bg-ink hover:text-white sm:h-16 sm:px-10 sm:text-lg"
+              className="h-14 border border-ink/35 bg-transparent px-8 text-base font-semibold text-ink hover:bg-ink hover:text-white sm:h-16 sm:px-10 sm:text-lg"
             >
               Guest view
             </Button>
-          </div>
+          </m.div>
         </div>
 
-        <div className="animate-fade-rise-delay relative mx-auto w-full max-w-[31.2rem] overflow-x-clip px-2 sm:overflow-visible md:mx-0 md:max-w-none md:justify-self-end md:px-0">
+        <div className="relative mx-auto w-full max-w-[31.2rem] overflow-x-clip px-2 sm:overflow-visible md:mx-0 md:max-w-none md:justify-self-end md:px-0">
           <div className="relative mx-auto w-[28rem] max-w-[calc((100vw-3rem)/1.2)] pb-20 [zoom:1.2] max-sm:w-[20rem] sm:pb-16">
             <div className="relative z-10 rotate-[-1.5deg]">
               <GuestCard />
             </div>
 
-            <Polaroid
+            <DriftPolaroid
+              reduced={reduced || !desktop}
+              className="absolute -top-4 -right-4 z-20 w-[5.5rem] rotate-[11deg] sm:-right-14 sm:w-[7.75rem]"
               src={photos.lookBack}
               alt="Bride looking back"
-              className="absolute -top-4 -right-4 z-20 w-[5.5rem] rotate-[11deg] sm:-right-14 sm:w-[7.75rem]"
               priority
+              amplitude={3}
+              duration={9}
             />
-            <Polaroid
+            <DriftPolaroid
+              reduced={reduced || !desktop}
+              className="absolute -right-2 bottom-14 z-20 w-[5rem] -rotate-[8deg] sm:-right-10 sm:w-28"
               src={photos.walkToward}
               alt="Couple walking together"
-              className="absolute -right-2 bottom-14 z-20 w-[5rem] -rotate-[8deg] sm:-right-10 sm:w-28"
               priority
+              amplitude={2.5}
+              duration={11}
+              delay={1.2}
             />
 
             <div className="pointer-events-none absolute -bottom-1 left-1/2 z-30 flex w-44 -translate-x-1/2 flex-col items-center sm:w-48">
@@ -143,5 +191,46 @@ export function Hero() {
         </div>
       </div>
     </section>
+  );
+}
+
+function DriftPolaroid({
+  src,
+  alt,
+  className,
+  priority,
+  reduced,
+  amplitude,
+  duration,
+  delay = 0,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  priority?: boolean;
+  reduced: boolean;
+  amplitude: number;
+  duration: number;
+  delay?: number;
+}) {
+  if (reduced) {
+    return (
+      <Polaroid src={src} alt={alt} className={className} priority={priority} />
+    );
+  }
+
+  return (
+    <m.div
+      className={className}
+      animate={{ y: [0, -amplitude, 0, amplitude * 0.6, 0] }}
+      transition={{
+        duration,
+        repeat: Infinity,
+        ease: "easeInOut",
+        delay,
+      }}
+    >
+      <Polaroid src={src} alt={alt} priority={priority} />
+    </m.div>
   );
 }

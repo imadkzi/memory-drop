@@ -1,4 +1,5 @@
 import { GuestUploadExperience } from "@/components/guest/guest-upload-experience";
+import { MotionProvider } from "@/components/motion/lazy-provider";
 import { hashUploadToken } from "@/lib/security/crypto";
 import { prisma } from "@/lib/db/prisma";
 import { mockWedding } from "@/lib/mock/data";
@@ -9,13 +10,11 @@ type Props = {
 
 function GuestShell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="light-wash relative min-h-screen overflow-x-clip">
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute -left-20 top-16 size-[18rem] rounded-full bg-bloom/15 blur-[90px]" />
-        <div className="absolute -right-16 bottom-20 size-[16rem] rounded-full bg-champagne/35 blur-[80px]" />
-      </div>
-      <div className="relative z-10">{children}</div>
-    </main>
+    <MotionProvider>
+      <main className="relative min-h-screen overflow-x-clip bg-[#f5e6df] paper-grain">
+        {children}
+      </main>
+    </MotionProvider>
   );
 }
 

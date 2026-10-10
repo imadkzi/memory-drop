@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { WeddingSidebar } from "@/components/admin/wedding-sidebar";
+import { MotionProvider } from "@/components/motion/lazy-provider";
 import { signOutAction } from "@/components/admin/sign-out-action";
 import { requireSession, requireWeddingAccess } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
@@ -39,8 +40,8 @@ export default async function WeddingLayout({ children, params }: Props) {
     : "Event date not set";
 
   return (
-    <>
-      <header className="border-b border-ink/8 bg-[#faf6f2]/85 backdrop-blur">
+    <MotionProvider>
+      <header className="border-b border-ink/10 bg-[#faf6f2]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/admin/dashboard" className="inline-flex shrink-0">
             <Image
@@ -77,8 +78,10 @@ export default async function WeddingLayout({ children, params }: Props) {
           driveConnected={Boolean(wedding.driveConnectionId)}
           subtitle={subtitle}
         />
-        <div className="min-w-0 flex-1">{children}</div>
+        <div className="min-w-0 flex-1 border border-ink/10 bg-white p-6 sm:p-8 lg:p-10">
+          {children}
+        </div>
       </div>
-    </>
+    </MotionProvider>
   );
 }

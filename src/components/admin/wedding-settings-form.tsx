@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { HardDrive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -96,8 +95,6 @@ export function WeddingSettingsForm({ wedding }: { wedding: WeddingSettings }) {
 
   return (
     <form onSubmit={save} className="space-y-8">
-      <SectionRule />
-
       <section>
         <h2 className="font-serif text-2xl tracking-tight text-ink">
           The wedding
@@ -145,26 +142,21 @@ export function WeddingSettingsForm({ wedding }: { wedding: WeddingSettings }) {
         <div
           className={
             wedding.driveConnected
-              ? "mt-5 flex flex-col gap-4 rounded-2xl bg-bloom-soft/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
-              : "mt-5 flex flex-col gap-4 rounded-2xl border border-bloom/25 bg-bloom-soft/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+              ? "mt-5 flex flex-col gap-4 border border-bloom/15 bg-bloom-soft/40 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+              : "mt-5 flex flex-col gap-4 border border-bloom/25 bg-bloom-soft/40 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
           }
         >
-          <div className="flex min-w-0 items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-bloom shadow-sm">
-              <HardDrive className="size-5" strokeWidth={1.6} />
-            </div>
-            <div className="min-w-0">
-              <p className="font-sans text-sm font-medium text-ink">
-                {wedding.driveConnected
-                  ? "Google Drive connected"
-                  : "Google Drive not connected"}
-              </p>
-              <p className="mt-1 font-sans text-xs leading-relaxed text-muted-foreground">
-                {wedding.driveConnected
-                  ? "All guest uploads are saved directly to your Google Drive folder."
-                  : "Guests cannot upload until Drive is connected. Connect it before sharing your link."}
-              </p>
-            </div>
+          <div className="min-w-0">
+            <p className="font-sans text-sm font-medium text-ink">
+              {wedding.driveConnected
+                ? "Google Drive connected"
+                : "Google Drive not connected"}
+            </p>
+            <p className="mt-1 font-sans text-xs leading-relaxed text-ink/55">
+              {wedding.driveConnected
+                ? "All guest uploads are saved directly to your Google Drive folder."
+                : "Guests cannot upload until Drive is connected. Connect it before sharing your link."}
+            </p>
           </div>
           {wedding.isOwner && (
             <Button

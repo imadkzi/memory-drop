@@ -1,65 +1,132 @@
-import { FolderHeart, Images, QrCode, Upload } from "lucide-react";
-import { Reveal } from "@/components/ui/reveal";
+"use client";
 
-const chapters = [
+import Image from "next/image";
+import {
+  FolderPlus,
+  Images,
+  QrCode,
+  UploadSimple,
+} from "@phosphor-icons/react/dist/ssr";
+import type { Icon } from "@phosphor-icons/react";
+import { m } from "motion/react";
+import { photos } from "@/components/home/photos";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+
+const beats: {
+  title: string;
+  copy: string;
+  icon: Icon;
+  src: string;
+  alt: string;
+  rotate: string;
+}[] = [
   {
     title: "Create the wedding",
-    copy: "Name the day. Connect your Google Drive. A private folder is ready before the first guest arrives.",
-    icon: FolderHeart,
+    copy: "Name the day. Connect Drive. A private folder waits.",
+    icon: FolderPlus,
+    src: photos.manor,
+    alt: "Wedding venue",
+    rotate: "-2.5deg",
   },
   {
     title: "Pass the link",
-    copy: "A URL or QR code on a card, a sign, an invitation. Guests open it on their phone and start.",
+    copy: "A URL or QR on a card, a sign, an invitation.",
     icon: QrCode,
+    src: photos.lookBack,
+    alt: "Bride looking back",
+    rotate: "1.8deg",
   },
   {
     title: "They contribute",
-    copy: "Photos and videos leave their camera roll and arrive in your collection. No gallery for them to wander through.",
-    icon: Upload,
+    copy: "Photos leave their camera roll — no guest gallery.",
+    icon: UploadSimple,
+    src: photos.kiss,
+    alt: "Couple at golden hour",
+    rotate: "-1.2deg",
   },
   {
     title: "You keep everything",
-    copy: "Preview, download, delete. Add an admin if you want help sorting after the weekend.",
+    copy: "Preview, download, delete. Invite help if you need it.",
     icon: Images,
+    src: photos.steps,
+    alt: "Couple on villa steps",
+    rotate: "2.2deg",
   },
 ];
 
 export function Flow() {
+  const reduced = usePrefersReducedMotion();
+
   return (
-    <section id="flow" className="relative z-0 overflow-x-clip bg-[#f6f0ea]">
-      <div className="mx-auto max-w-6xl px-6 py-16 md:px-8 md:py-20">
-        <Reveal className="mb-10 max-w-xl">
-          <h2 className="mt-3 font-serif text-3xl tracking-tight text-ink sm:text-4xl">
+    <section id="flow" className="relative z-0 overflow-x-clip paper-warm paper-grain">
+      <div className="mx-auto max-w-6xl px-6 py-16 md:px-8 md:py-24">
+        <div className="max-w-md">
+          <div className="chapter-rule mb-6 bg-ink" />
+          <h2 className="font-serif text-3xl tracking-tight text-ink sm:text-4xl lg:text-[2.75rem]">
             Four quiet moves.
           </h2>
-        </Reveal>
+        </div>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          {chapters.map((chapter, index) => {
-            const Icon = chapter.icon;
+        <m.ol
+          className="mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-8% 0px" }}
+          variants={{
+            hidden: {},
+            show: {
+              transition: reduced
+                ? { staggerChildren: 0 }
+                : { staggerChildren: 0.1 },
+            },
+          }}
+        >
+          {beats.map((beat) => {
+            const Icon = beat.icon;
             return (
-              <Reveal key={chapter.title} delayMs={index * 80}>
-                <article className="rounded-xl border border-ink/8 bg-[#faf6f2] p-6 shadow-[0_10px_30px_-18px_rgba(40,20,20,0.35)] sm:p-7">
-                  <div
-                    className={`mb-5 flex size-11 items-center justify-center rounded-lg ${
-                      (Math.floor(index / 2) + index) % 2 === 0
-                        ? "bg-bloom-soft text-bloom"
-                        : "bg-champagne-soft text-[oklch(0.55_0.08_75)]"
-                    }`}
-                  >
-                    <Icon className="size-5" strokeWidth={1.5} aria-hidden />
+              <m.li
+                key={beat.title}
+                className="flex flex-col"
+                variants={{
+                  hidden: reduced ? { opacity: 1 } : { opacity: 0, y: 10 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+              >
+                <div
+                  className="polaroid mx-auto w-[11.5rem] sm:mx-0 sm:w-full sm:max-w-[14rem]"
+                  style={{ rotate: beat.rotate }}
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-blush-soft">
+                    <Image
+                      src={beat.src}
+                      alt={beat.alt}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 184px, 224px"
+                      quality={72}
+                    />
                   </div>
-                  <h3 className="font-serif text-2xl tracking-tight text-ink">
-                    {chapter.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-                    {chapter.copy}
-                  </p>
-                </article>
-              </Reveal>
+                </div>
+
+                <Icon
+                  className="mt-7 size-6 text-bloom"
+                  weight="light"
+                  aria-hidden
+                />
+                <h3 className="mt-3 font-serif text-xl tracking-tight text-ink sm:text-2xl">
+                  {beat.title}
+                </h3>
+                <p className="mt-2 max-w-[16rem] text-[15px] leading-relaxed text-ink/65">
+                  {beat.copy}
+                </p>
+              </m.li>
             );
           })}
-        </div>
+        </m.ol>
       </div>
     </section>
   );
