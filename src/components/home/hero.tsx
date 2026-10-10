@@ -58,9 +58,6 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 content-center gap-12 px-6 py-10 md:grid-cols-[1.05fr_0.95fr] md:items-center md:gap-10 md:px-8 md:py-14">
         <div>
-          <p className="font-serif text-2xl tracking-tight text-bloom sm:text-3xl">
-            Memory Drop
-          </p>
           <h1 className="mt-3 font-serif text-5xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
             Collect every photo your guests take.
           </h1>
