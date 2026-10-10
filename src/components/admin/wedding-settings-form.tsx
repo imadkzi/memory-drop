@@ -97,7 +97,7 @@ export function WeddingSettingsForm({ wedding }: { wedding: WeddingSettings }) {
     <form onSubmit={save} className="space-y-8">
       <section>
         <h2 className="font-serif text-2xl tracking-tight text-ink">
-          The wedding
+          The event
         </h2>
         <p className="mt-2 font-sans text-sm text-muted-foreground">
           Name and date for your collection.

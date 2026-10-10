@@ -33,7 +33,7 @@ async function main() {
   if (existingWedding) {
     console.log("Development wedding already exists:", existingWedding.id);
     console.log("Sign in with", email, "/", password);
-    console.log("Note: Connect Google Drive via the UI — no fake Drive credentials are seeded.");
+    console.log("Note: Connect Google Drive via the UI: no fake Drive credentials are seeded.");
     return;
   }
 
@@ -59,7 +59,7 @@ async function main() {
   console.log("Created development wedding:", wedding.id);
   console.log("Guest upload URL:", `${env.NEXT_PUBLIC_APP_URL}/upload/${token}`);
   console.log("Sign in with", email, "/", password);
-  console.log("Note: Connect Google Drive via the UI — no fake Drive credentials are seeded.");
+  console.log("Note: Connect Google Drive via the UI: no fake Drive credentials are seeded.");
 }
 
 main()

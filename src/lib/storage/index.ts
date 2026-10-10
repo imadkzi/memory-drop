@@ -34,7 +34,7 @@ export async function getStorageForWedding(weddingId: string): Promise<{
   });
 
   if (!wedding?.driveConnectionId || !wedding.driveFolderId) {
-    throw new Error("Google Drive is not connected for this wedding");
+    throw new Error("Google Drive is not connected for this event");
   }
 
   const storage = await getStorageForConnection(wedding.driveConnectionId);

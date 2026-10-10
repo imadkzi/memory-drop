@@ -103,10 +103,11 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    /* clip avoids creating a scrollport that breaks position:sticky */
+    @apply bg-background text-foreground overflow-x-clip;
   }
   html {
-    @apply font-sans scroll-smooth overflow-x-hidden;
+    @apply font-sans scroll-smooth overflow-x-clip;
   }
 }
 
@@ -119,7 +120,7 @@
   }
 }
 
-/* Hero only — opacity, no slide-up stamp */
+/* Hero only: opacity, no slide-up stamp */
 .animate-fade-rise {
   animation: fade-in 0.55s ease-out both;
 }
@@ -167,7 +168,7 @@
   background: oklch(0.42 0.045 18);
 }
 
-/* Quiet paper — no radial orbs */
+/* Quiet paper: no radial orbs */
 .light-wash {
   background: oklch(0.985 0.008 50);
 }
@@ -176,7 +177,7 @@
   background: oklch(0.965 0.014 45);
 }
 
-/* Subtle Shiro-like paper grain — keep opacity low */
+/* Subtle Shiro-like paper grain: keep opacity low */
 .paper-grain {
   position: relative;
   isolation: isolate;
@@ -225,6 +226,13 @@
   box-shadow:
     0 12px 28px -10px oklch(0.2 0.03 30 / 0.45),
     0 2px 6px oklch(0.2 0.03 30 / 0.12);
+}
+
+.polaroid-slim {
+  padding: 0.22rem 0.22rem 0.42rem;
+  box-shadow:
+    0 8px 18px -8px oklch(0.2 0.03 30 / 0.4),
+    0 1px 3px oklch(0.2 0.03 30 / 0.1);
 }
 
 .film-grain {

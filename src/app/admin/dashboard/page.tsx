@@ -40,7 +40,7 @@ export default async function AdminDashboardPage() {
         <div className="border-b border-ink/10 pb-8">
           <div className="chapter-rule mb-5 bg-ink" />
           <h1 className="font-serif text-4xl tracking-tight text-ink sm:text-5xl">
-            Your weddings
+            Your events
           </h1>
           <p className="mt-3 max-w-lg font-sans text-base leading-relaxed text-ink/60">
             Private collections for the people who matter.
@@ -51,7 +51,7 @@ export default async function AdminDashboardPage() {
 
         {memberships.length === 0 ? (
           <div className="border border-dashed border-ink/15 px-6 py-16 text-center">
-            <p className="font-serif text-2xl text-ink">No weddings yet</p>
+            <p className="font-serif text-2xl text-ink">No events yet</p>
             <p className="mt-2 font-sans text-ink/55">
               Create your first collection above.
             </p>

@@ -23,7 +23,7 @@ export function CreateWeddingForm() {
     });
     const json = await res.json();
     if (!res.ok) {
-      setError(json.error ?? "We couldn't create this wedding.");
+      setError(json.error ?? "We couldn't create this event.");
       setLoading(false);
       return;
     }
@@ -46,7 +46,7 @@ export function CreateWeddingForm() {
             htmlFor="wedding-name"
             className="font-sans text-sm text-ink/55"
           >
-            Wedding name
+            Event name
           </Label>
           <Input
             id="wedding-name"

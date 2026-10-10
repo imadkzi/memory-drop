@@ -26,7 +26,8 @@ export function Story() {
           </p>
           <p className="text-ink/90">
             Memory Drop is a single quiet channel. Guests send. You receive.
-            The collection stays private, in a Drive folder you own.
+            The day ends in one place, not scattered across chats and half-finished
+            albums.
           </p>
         </Reveal>
       </div>

@@ -11,6 +11,9 @@ const access = [
   { label: "Storage", value: "Your Google Drive" },
 ];
 
+const storageNote =
+  "Memory Drop does not provide Google storage. You connect your own Drive account; guest uploads write there, and Google’s quota applies.";
+
 export function Privacy() {
   const reduced = usePrefersReducedMotion();
 
@@ -68,6 +71,9 @@ export function Privacy() {
             </div>
           ))}
         </dl>
+        <p className="mt-8 text-sm leading-relaxed text-white/65">
+          {storageNote}
+        </p>
       </div>
     </section>
   );

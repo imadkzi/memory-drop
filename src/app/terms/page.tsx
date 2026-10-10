@@ -5,19 +5,24 @@ import { LEGAL_CONTACT, LegalPage } from "@/components/legal/legal-page";
 export const metadata: Metadata = {
   title: "Terms and conditions",
   description:
-    "The terms for using Memory Drop to collect wedding photos and videos from guests.",
+    "The terms for using Memory Drop to collect event photos and videos from guests.",
+  alternates: { canonical: "/terms" },
+  openGraph: {
+    title: "Terms and conditions · Memory Drop",
+    url: "/terms",
+  },
 };
 
 export default function TermsPage() {
   return (
     <LegalPage
       title="Terms and conditions"
-      description="These terms cover use of Memory Drop by people who create an account, people they add as admins, and guests who upload through a wedding link."
+      description="These terms cover use of Memory Drop by people who create an account, people they add as admins, and guests who upload through an event link."
     >
       <section>
         <h2>1. The service</h2>
         <p>
-          Memory Drop lets a wedding owner open a private collection, connect
+          Memory Drop lets an event owner open a private collection, connect
           their own Google Drive, and share one upload link or QR code. Guests
           can send photos and videos. They cannot browse the collection. Owners
           and admins can preview, download, and delete files.
@@ -34,7 +39,7 @@ export default function TermsPage() {
         <h2>2. Who may use it</h2>
         <p>
           You must be able to enter a contract where you live. Accounts are for
-          adults organising or helping with a wedding collection. We do not
+          adults organising or helping with an event collection. We do not
           knowingly open accounts for children, and the form does not check a
           date of birth.
         </p>
@@ -60,20 +65,20 @@ export default function TermsPage() {
           privacy policy for what that deletion covers.
         </p>
         <p>
-          The wedding owner can invite an admin by email. That creates a private
+          The event owner can invite an admin by email. That creates a private
           invite link the owner copies and sends. The invite expires after 7
           days. If the person does not have an account yet, they set a password
           on the link. If they already have an account, they sign in and accept.
-          Admins can view, download, and delete media and see wedding settings.
+          Admins can view, download, and delete media and see event settings.
           Only the owner can invite or remove admins and regenerate the upload
-          link. Removing an admin removes their access to that wedding. It does
+          link. Removing an admin removes their access to that event. It does
           not delete their Memory Drop account.
         </p>
       </section>
 
       <section>
-        <h2>4. Wedding collections</h2>
-        <p>If you create a wedding, you are responsible for:</p>
+        <h2>4. Event collections</h2>
+        <p>If you create an event, you are responsible for:</p>
         <ul>
           <li>
             Having a lawful reason to collect guest photos and videos, and
@@ -95,13 +100,13 @@ export default function TermsPage() {
           </li>
         </ul>
         <p>
-          You can set the wedding name, an event date, whether uploads are
+          You can set the event name, an event date, whether uploads are
           open, and size limits. Defaults are 25 MB for a photo and 1 GB for a
           video, unless the deployment uses different defaults. Settings allow
           up to 100 MB for a photo and 5 GB for a video.
         </p>
         <p>
-          There is no button yet to delete a whole wedding or to disconnect
+          There is no button yet to delete a whole event or to disconnect
           Google Drive. Email us if you need either. Files already written to
           Drive remain in that Google account until they are deleted there.
         </p>
@@ -111,7 +116,7 @@ export default function TermsPage() {
         <h2>5. Guest uploads</h2>
         <p>
           The upload page accepts JPEG, PNG, WebP, HEIC, HEIF, MP4, and
-          QuickTime MOV files, within the wedding&apos;s size limits. Other
+          QuickTime MOV files, within the event&apos;s size limits. Other
           types are rejected. We do not remove hidden metadata from files.
         </p>
         <p>
@@ -122,7 +127,7 @@ export default function TermsPage() {
         </p>
         <p>
           We may refuse or rate-limit uploads that look abusive. The default
-          limit is 30 requests per IP address and 60 per wedding link in a
+          limit is 30 requests per IP address and 60 per event link in a
           10-minute window. That limit is enforced in server memory.
         </p>
       </section>
@@ -135,7 +140,7 @@ export default function TermsPage() {
           Drop can create and manage the folders and files it creates, and
           cannot read the rest of your Drive. We store the resulting tokens
           encrypted, and we use them to create a Memory Drop folder, a
-          folder for the wedding, and to upload, preview, download, and delete
+          folder for the event, and to upload, preview, download, and delete
           files the app put there.
         </p>
         <p>
@@ -172,7 +177,7 @@ export default function TermsPage() {
         <p>
           We may suspend an account, turn uploads off, or invalidate a link if
           we reasonably believe these terms are being broken or the service is
-          at risk. Where we can, we will tell the wedding owner.
+          at risk. Where we can, we will tell the event owner.
         </p>
       </section>
 
@@ -182,8 +187,8 @@ export default function TermsPage() {
           Guests and owners keep their rights in the photos and videos. You
           give Memory Drop a limited permission to receive, transmit, store in
           the connected Google Drive, and show those files to the owner and
-          admins of that wedding, only so we can run the service. We do not
-          claim ownership and we do not use wedding files for advertising or to
+          admins of that event, only so we can run the service. We do not
+          claim ownership and we do not use event files for advertising or to
           train models.
         </p>
         <p>
@@ -230,7 +235,7 @@ export default function TermsPage() {
         <h2>11. Ending use</h2>
         <p>
           You may stop using the service at any time. Signing out ends the
-          current session. Closing the account, deleting a wedding, or
+          current session. Closing the account, deleting an event, or
           disconnecting Drive requires an email request until those controls
           exist in the product. Guest links stop accepting files when the owner
           turns uploads off or regenerates the link.

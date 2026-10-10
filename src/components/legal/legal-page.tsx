@@ -18,7 +18,7 @@ export function LegalPage({
       <header className="border-b border-ink/10">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
           <Link href="/" className="inline-flex">
-            <BrandMark src="/logo-bloom.webp" />
+            <BrandMark src="/brand/logo-bloom.webp" />
           </Link>
           <nav className="flex gap-4 text-sm text-ink/70">
             <Link href="/privacy" className="hover:text-ink">

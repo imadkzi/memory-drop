@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { Hero } from "@/components/home/hero";
 import { SiteFooter } from "@/components/home/site-footer";
 import { MotionProvider } from "@/components/motion/lazy-provider";
+import { HomeJsonLd } from "@/components/seo/json-ld";
 
 const Story = dynamic(() =>
   import("@/components/home/story").then((m) => m.Story),
@@ -21,22 +22,25 @@ const GetStarted = dynamic(() =>
 
 export default function HomePage() {
   return (
-    <MotionProvider>
-      <main className="overflow-x-clip bg-background text-foreground">
-        <a
-          href="#story"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-ink focus:shadow"
-        >
-          Skip to content
-        </a>
-        <Hero />
-        <Story />
-        <Flow />
-        <BetterWay />
-        <Privacy />
-        <GetStarted />
-        <SiteFooter />
-      </main>
-    </MotionProvider>
+    <>
+      <HomeJsonLd />
+      <MotionProvider>
+        <main className="bg-background text-foreground">
+          <a
+            href="#story"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-ink focus:shadow"
+          >
+            Skip to content
+          </a>
+          <Hero />
+          <Story />
+          <Flow />
+          <BetterWay />
+          <Privacy />
+          <GetStarted />
+          <SiteFooter />
+        </main>
+      </MotionProvider>
+    </>
   );
 }

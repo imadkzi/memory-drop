@@ -38,7 +38,7 @@ export async function POST(request: Request, context: Ctx) {
 
   const membership = await requireWeddingAccess(session.user.id, weddingId);
   if (!membership) {
-    return NextResponse.json({ error: "Wedding not found." }, { status: 404 });
+    return NextResponse.json({ error: "Event not found." }, { status: 404 });
   }
 
   const body = await request.json().catch(() => ({}));
@@ -66,7 +66,7 @@ export async function POST(request: Request, context: Ctx) {
     ({ storage } = await getStorageForWedding(weddingId));
   } catch {
     return NextResponse.json(
-      { error: "Google Drive is not connected for this wedding." },
+      { error: "Google Drive is not connected for this event." },
       { status: 503 },
     );
   }

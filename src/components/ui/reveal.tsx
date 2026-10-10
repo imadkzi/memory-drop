@@ -8,11 +8,11 @@ import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 type RevealProps = {
   children: ReactNode;
   className?: string;
-  /** Stagger offset in ms — converted to seconds for Motion. */
+  /** Stagger offset in ms: converted to seconds for Motion. */
   delayMs?: number;
 };
 
-/** Selective scroll reveal — opacity + tiny Y, once. Use sparingly. */
+/** Selective scroll reveal: opacity + tiny Y, once. Use sparingly. */
 export function Reveal({ children, className, delayMs = 0 }: RevealProps) {
   const reduced = usePrefersReducedMotion();
 

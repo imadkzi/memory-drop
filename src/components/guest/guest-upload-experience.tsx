@@ -195,7 +195,7 @@ export function GuestUploadExperience({
     return (
       <StationaryShell weddingName={weddingName}>
         <p className="mt-6 font-sans text-base text-muted-foreground">
-          Uploads are temporarily closed for this wedding.
+          Uploads are temporarily closed for this event.
         </p>
       </StationaryShell>
     );
@@ -206,7 +206,7 @@ export function GuestUploadExperience({
       <StationaryShell weddingName={weddingName}>
         <p className="mt-6 font-sans text-base leading-relaxed text-muted-foreground">
           This collection isn&apos;t ready for uploads yet. The couple still
-          needs to finish setup — please try again later.
+          needs to finish setup. Please try again later.
         </p>
       </StationaryShell>
     );
@@ -227,7 +227,7 @@ export function GuestUploadExperience({
           All done
         </h1>
         <p className="mt-4 font-sans text-lg leading-relaxed text-ink/75">
-          Your memories have been added to {weddingName}&apos;s wedding
+          Your memories have been added to {weddingName}&apos;s event
           collection.
         </p>
         <p className="mt-8 font-sans text-base text-ink/55">Thank you.</p>
@@ -246,7 +246,7 @@ export function GuestUploadExperience({
           Share your memories
         </p>
         <p className="mt-3 font-sans text-base text-ink/60">
-          Help us collect the moments from our wedding day.
+          Help us collect the moments from our event.
         </p>
 
         <AnimatePresence mode="wait">
@@ -273,7 +273,7 @@ export function GuestUploadExperience({
               </label>
               <p className="font-sans text-sm text-muted-foreground">
                 No account required. Uploading means the files go to this
-                wedding&apos;s collection.{" "}
+                event&apos;s collection.{" "}
                 <Link
                   href="/privacy"
                   className="underline-offset-4 hover:text-ink hover:underline"

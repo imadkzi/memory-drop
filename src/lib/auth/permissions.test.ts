@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 type WeddingAdminRole = "OWNER" | "ADMIN";
 
 /**
- * Pure permission matrix tests — guest capability is UPLOAD-only;
+ * Pure permission matrix tests: guest capability is UPLOAD-only;
  * media list/download/delete require wedding membership.
  */
 function canGuestListMedia() {

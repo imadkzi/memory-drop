@@ -18,7 +18,7 @@ export async function POST(request: Request, context: Ctx) {
 
   const membership = await requireWeddingAccess(session.user.id, weddingId);
   if (!membership) {
-    return NextResponse.json({ error: "Wedding not found." }, { status: 404 });
+    return NextResponse.json({ error: "Event not found." }, { status: 404 });
   }
 
   const body = await request.json().catch(() => null);

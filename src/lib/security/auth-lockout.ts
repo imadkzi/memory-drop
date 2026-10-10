@@ -1,6 +1,6 @@
 /**
  * In-memory email lockout after repeated failed sign-ins.
- * Single-instance MVP — replace with Redis/DB when scaling horizontally.
+ * Single-instance MVP: replace with Redis/DB when scaling horizontally.
  */
 
 export const AUTH_LOCKOUT = {

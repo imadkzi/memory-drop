@@ -45,7 +45,7 @@ export default async function WeddingLayout({ children, params }: Props) {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/admin/dashboard" className="inline-flex shrink-0">
             <Image
-              src="/logo-bloom.webp"
+              src="/brand/logo-bloom.webp"
               alt="MemoryDrop"
               width={200}
               height={36}

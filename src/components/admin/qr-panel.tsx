@@ -38,7 +38,7 @@ export function QrPanel({
     if (!dataUrl) return;
     const anchor = document.createElement("a");
     anchor.href = dataUrl;
-    anchor.download = `wedding-${weddingId}-qr.png`;
+    anchor.download = `event-${weddingId}-qr.png`;
     anchor.click();
   }
 

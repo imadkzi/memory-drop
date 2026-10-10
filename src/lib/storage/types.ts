@@ -12,7 +12,7 @@ export type CreateResumableUploadInput = {
   filename: string;
   mimeType: string;
   size: number;
-  /** Browser origin — required for CORS if the client uploads directly to Drive */
+  /** Browser origin: required for CORS if the client uploads directly to Drive */
   origin?: string;
 };
 

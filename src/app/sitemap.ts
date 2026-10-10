@@ -1,27 +1,25 @@
 import type { MetadataRoute } from "next";
-
-const appUrl =
-  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
+import { getSiteUrl, siteConfig } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
+  const appUrl = getSiteUrl();
+
   return [
     {
       url: appUrl,
-      lastModified,
+      lastModified: new Date(siteConfig.contentUpdated.home),
       changeFrequency: "monthly",
       priority: 1,
     },
     {
       url: `${appUrl}/privacy`,
-      lastModified,
+      lastModified: new Date(siteConfig.contentUpdated.privacy),
       changeFrequency: "yearly",
       priority: 0.4,
     },
     {
       url: `${appUrl}/terms`,
-      lastModified,
+      lastModified: new Date(siteConfig.contentUpdated.terms),
       changeFrequency: "yearly",
       priority: 0.4,
     },

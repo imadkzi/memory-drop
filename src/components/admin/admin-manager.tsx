@@ -118,8 +118,8 @@ export function AdminManager({
     setInviteUrl(json.url);
     setMessage(
       json.refreshed
-        ? "Invite refreshed — copy the link and send it to them."
-        : "Invite created — copy the link and send it to them.",
+        ? "Invite refreshed. Copy the link and send it to them."
+        : "Invite created. Copy the link and send it to them.",
     );
     router.refresh();
   }
@@ -137,7 +137,7 @@ export function AdminManager({
       return;
     }
     setInviteUrl(json.url);
-    setMessage("New invite link ready — copy and send it.");
+    setMessage("New invite link ready. Copy and send it.");
     router.refresh();
   }
 
@@ -196,7 +196,7 @@ export function AdminManager({
           </h2>
           <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
             Enter their email to create a private invite link. Copy it and send
-            it yourself — the link expires in 7 days.
+            it yourself. The link expires in 7 days.
           </p>
           <form
             onSubmit={createInvite}
@@ -262,7 +262,7 @@ export function AdminManager({
         </section>
       ) : (
         <p className="font-sans text-sm text-muted-foreground">
-          Only the wedding owner can manage administrators.
+          Only the event owner can manage administrators.
         </p>
       )}
 

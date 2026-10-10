@@ -19,7 +19,7 @@ export async function AdminShell({
           <div className="flex min-w-0 items-center gap-4 md:gap-6">
             <Link href="/admin/dashboard" className="inline-flex shrink-0">
               <Image
-                src="/logo-bloom.webp"
+                src="/brand/logo-bloom.webp"
                 alt="MemoryDrop"
                 width={200}
                 height={36}
