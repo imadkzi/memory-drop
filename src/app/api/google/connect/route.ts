@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
   const weddingId = new URL(request.url).searchParams.get("weddingId");
   if (!weddingId) {
-    return NextResponse.json({ error: "Missing wedding." }, { status: 400 });
+    return NextResponse.json({ error: "Missing event." }, { status: 400 });
   }
 
   const membership = await requireWeddingAccess(session.user.id, weddingId, ["OWNER"]);

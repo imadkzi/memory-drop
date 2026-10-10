@@ -38,7 +38,7 @@ export function hashUploadToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
-/** Same strength as upload tokens — used for admin invite links. */
+/** Same strength as upload tokens: used for admin invite links. */
 export const generateInviteToken = generateUploadToken;
 export const hashInviteToken = hashUploadToken;
 
@@ -49,5 +49,5 @@ export function generateSlug(name: string): string {
     .replace(/^-|-$/g, "")
     .slice(0, 48);
   const suffix = randomBytes(3).toString("hex");
-  return `${base || "wedding"}-${suffix}`;
+  return `${base || "event"}-${suffix}`;
 }

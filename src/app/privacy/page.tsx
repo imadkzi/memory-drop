@@ -5,19 +5,24 @@ import { LEGAL_CONTACT, LegalPage } from "@/components/legal/legal-page";
 export const metadata: Metadata = {
   title: "Privacy policy",
   description:
-    "How Memory Drop collects, stores, and shares personal data for wedding accounts, guest uploads, and Google Drive.",
+    "How Memory Drop collects, stores, and shares personal data for event accounts, guest uploads, and Google Drive.",
+  alternates: { canonical: "/privacy" },
+  openGraph: {
+    title: "Privacy policy · Memory Drop",
+    url: "/privacy",
+  },
 };
 
 export default function PrivacyPolicyPage() {
   return (
     <LegalPage
       title="Privacy policy"
-      description="This notice describes how Memory Drop handles personal data. It matches the product as it is built: guest photos are stored in the wedding owner's Google Drive, and Memory Drop keeps the account and file records needed to run the service."
+      description="This notice describes how Memory Drop handles personal data. It matches the product as it is built: guest photos are stored in the event owner's Google Drive, and Memory Drop keeps the account and file records needed to run the service."
     >
       <section>
         <h2>1. Who this notice is from</h2>
         <p>
-          Memory Drop is a private wedding photo and video collection service.
+          Memory Drop is a private event photo and video collection service.
           Guests send files through a secret link. The couple, and any admins
           they add, are the only people who can view the collection.
         </p>
@@ -30,17 +35,17 @@ export default function PrivacyPolicyPage() {
           requests.
         </p>
         <p>
-          For the photos and videos themselves, the wedding owner decides to
+          For the photos and videos themselves, the event owner decides to
           open a collection and decides who may view or delete it. Those files
           are stored in a Google Drive folder on the owner&apos;s Google
           account. Memory Drop processes them only to receive the upload, place
           the file in that folder, and let authorised people preview, download,
-          or delete it. The wedding owner is the controller of that collection.
+          or delete it. The event owner is the controller of that collection.
           Memory Drop is their processor for the file contents, and remains the
           controller for the metadata and security logs described below.
         </p>
         <p>
-          If you are organising a wedding, you may need your own short notice
+          If you are organising an event, you may need your own short notice
           for guests, because you decide to collect their photos. This page
           explains what the product does. It does not replace that notice.
         </p>
@@ -66,12 +71,12 @@ export default function PrivacyPolicyPage() {
           seven days, refreshed while you keep using the app.
         </p>
         <p>
-          <strong className="font-semibold text-ink">Weddings.</strong> The
-          owner stores a wedding name, an optional event date, whether guest
+          <strong className="font-semibold text-ink">Events.</strong> The
+          owner stores an event name, an optional event date, whether guest
           uploads are open, and the photo and video size limits. We also store
-          which Google Drive folder belongs to that wedding, and which admins
+          which Google Drive folder belongs to that event, and which admins
           have access. Admins are added by email, and only if that person
-          already has a Memory Drop account. Other admins of that wedding can
+          already has a Memory Drop account. Other admins of that event can
           see each admin&apos;s name and email.
         </p>
         <p>
@@ -93,11 +98,11 @@ export default function PrivacyPolicyPage() {
         <p>
           <strong className="font-semibold text-ink">IP addresses.</strong> For
           guest uploads we read the IP address only to rate-limit abuse. The
-          default limit is 30 upload requests per IP and 60 per wedding link,
+          default limit is 30 upload requests per IP and 60 per event link,
           inside a 10-minute window. Those counters live in the server&apos;s
           memory and are dropped when the window passes or the server restarts.
           They are not saved as a guest profile. If a limit is hit, the IP
-          address and wedding id are written to the server log.
+          address and event id are written to the server log.
         </p>
         <p>
           <strong className="font-semibold text-ink">Google Drive.</strong> If
@@ -107,7 +112,7 @@ export default function PrivacyPolicyPage() {
           <span className="text-ink">drive.file</span>: Memory Drop can create
           and manage files it created for this app. It cannot browse the rest
           of that Google account. We create a &quot;Memory Drop&quot;
-          folder and a folder named for the wedding, then put uploads there.
+          folder and a folder named for the event, then put uploads there.
         </p>
         <p>
           The secret upload link is a random token. We store a SHA-256 hash of
@@ -121,7 +126,7 @@ export default function PrivacyPolicyPage() {
         <h2>3. Why we use it, and the lawful basis</h2>
         <ul>
           <li>
-            Account details, wedding settings, and Drive tokens: to provide the
+            Account details, event settings, and Drive tokens: to provide the
             service you asked for. Basis: contract (UK/EU GDPR Article 6(1)(b)).
           </li>
           <li>
@@ -132,7 +137,7 @@ export default function PrivacyPolicyPage() {
           </li>
           <li>
             Guest files and their file records: because the guest chose to
-            upload them to that wedding, and because the owner asked us to
+            upload them to that event, and because the owner asked us to
             receive them into their Drive. For Memory Drop, this is processing
             on the owner&apos;s instructions. The owner needs their own basis
             for collecting guest photos, which is usually the guest&apos;s
@@ -150,8 +155,8 @@ export default function PrivacyPolicyPage() {
         <h2>4. Who can see it</h2>
         <ul>
           <li>
-            Wedding owners and admins can preview, download, and delete files
-            in that wedding. Guests cannot open a gallery, list other
+            Event owners and admins can preview, download, and delete files
+            in that event. Guests cannot open a gallery, list other
             people&apos;s uploads, or receive Drive credentials.
           </li>
           <li>
@@ -188,12 +193,12 @@ export default function PrivacyPolicyPage() {
         <h2>5. How long we keep it</h2>
         <ul>
           <li>
-            Account, wedding, admin, and Drive-token records are kept until the
-            account or wedding is deleted. There is no delete-account,
-            delete-wedding, or disconnect-Drive control in the product yet.
+            Account, event, admin, and Drive-token records are kept until the
+            account or event is deleted. There is no delete-account,
+            delete-event, or disconnect-Drive control in the product yet.
             Email {LEGAL_CONTACT} and we will carry out a grounded request,
             including deleting the database rows. Deleting a user in the
-            database also deletes their sessions, login records, weddings they
+            database also deletes their sessions, login records, events they
             own, admin memberships, and stored Drive tokens.
           </li>
           <li>
@@ -204,7 +209,7 @@ export default function PrivacyPolicyPage() {
             the file in Google Drive and we mark our record as deleted. The
             record is not removed. If the Drive delete fails, the file can
             remain in the owner&apos;s Drive even though Memory Drop no longer
-            shows it. There is no automatic deletion after the wedding date,
+            shows it. There is no automatic deletion after the event date,
             and there is no trash you can restore from inside Memory Drop.
           </li>
           <li>
@@ -247,7 +252,7 @@ export default function PrivacyPolicyPage() {
           Drive tokens and the raw upload link are encrypted at rest. The link
           is looked up by its hash. Passwords are stored only as a hash.
           Admin actions require a session and a check that the person belongs
-          to that wedding. Owners can regenerate the upload link, turn uploads
+          to that event. Owners can regenerate the upload link, turn uploads
           off, and remove admins. Guests cannot list media. Logs are written so
           that passwords, session tokens, upload tokens, and Drive tokens are
           redacted.
@@ -264,9 +269,9 @@ export default function PrivacyPolicyPage() {
         <p>
           Accounts are for people organising a collection. We do not knowingly
           register children, and the sign-up form does not ask for a date of
-          birth. Wedding photos and videos may show children because guests
+          birth. Event photos and videos may show children because guests
           took them. We do not use those images to identify children. The
-          wedding owner is responsible for whether collecting those images is
+          event owner is responsible for whether collecting those images is
           appropriate.
         </p>
       </section>
@@ -287,30 +292,30 @@ export default function PrivacyPolicyPage() {
           will respond within one month, unless the request is complex, in
           which case the law allows an extension and we will tell you. We may
           ask for enough information to confirm it is you, or that you are the
-          wedding owner.
+          event owner.
         </p>
         <p>What you can do yourself today:</p>
         <ul>
           <li>Sign out, which ends that session.</li>
           <li>
-            Owners and admins can delete individual files in the wedding
+            Owners and admins can delete individual files in the event
             gallery. That attempts a Drive delete and hides the file in Memory
             Drop.
           </li>
           <li>
-            Owners can turn uploads off, change the wedding name and date,
+            Owners can turn uploads off, change the event name and date,
             change size limits, regenerate the upload link, and remove an
             admin.
           </li>
         </ul>
         <p>
           Guests cannot pull a file back after it has uploaded. Ask the couple,
-          or email us and we will pass the request to the wedding owner where
+          or email us and we will pass the request to the event owner where
           we can identify the file. There is no guest name on the upload, so we
-          may only be able to find a file from the file name, time, and wedding.
+          may only be able to find a file from the file name, time, and event.
         </p>
         <p>
-          Closing an account, deleting a whole wedding, or disconnecting Google
+          Closing an account, deleting a whole event, or disconnecting Google
           Drive is not a button in the product. Ask by email and we will do it
           in the database. Files already in the owner&apos;s Google Drive stay
           under that Google account unless they are deleted there as well.

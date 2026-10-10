@@ -1,4 +1,18 @@
+import type { Metadata } from "next";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Admin",
+    template: "%s · Memory Drop Admin",
+  },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: { index: false, follow: false, noimageindex: true },
+  },
+};
 
 export default function AdminLayout({
   children,
@@ -12,20 +26,20 @@ export default function AdminLayout({
         aria-hidden
       >
         <Image
-          src="/floral-asset.webp"
+          src="/florals/floral-asset.webp"
           alt=""
-          width={900}
-          height={600}
+          width={720}
+          height={480}
           sizes="(max-width: 640px) 18rem, 26rem"
           className="absolute top-1/2 -left-16 w-[18rem] max-w-none -translate-y-1/2 -rotate-[12deg] opacity-70 sm:-left-12 sm:w-[22rem] md:w-[26rem]"
           loading="lazy"
           quality={70}
         />
         <Image
-          src="/floral-asset.webp"
+          src="/florals/floral-asset.webp"
           alt=""
-          width={900}
-          height={600}
+          width={720}
+          height={480}
           sizes="(max-width: 640px) 26rem, 40rem"
           className="absolute -right-16 -bottom-16 w-[26rem] max-w-none rotate-[12deg] -scale-x-100 opacity-65 sm:-right-20 sm:-bottom-20 sm:w-[34rem] md:w-[40rem]"
           loading="lazy"

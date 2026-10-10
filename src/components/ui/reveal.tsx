@@ -1,47 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { m } from "motion/react";
 import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 type RevealProps = {
   children: ReactNode;
   className?: string;
+  /** Stagger offset in ms: converted to seconds for Motion. */
   delayMs?: number;
 };
 
+/** Selective scroll reveal: opacity + tiny Y, once. Use sparingly. */
 export function Reveal({ children, className, delayMs = 0 }: RevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const reduced = usePrefersReducedMotion();
 
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -6% 0px" },
+  if (reduced) {
+    return className ? (
+      <div className={cn(className)}>{children}</div>
+    ) : (
+      <>{children}</>
     );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
-  const style: CSSProperties | undefined = delayMs
-    ? { transitionDelay: `${delayMs}ms` }
-    : undefined;
+  }
 
   return (
-    <div
-      ref={ref}
-      className={cn("reveal-base", visible && "reveal-visible", className)}
-      style={style}
+    <m.div
+      className={cn(className)}
+      initial={{ opacity: 0, y: 8 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-8% 0px" }}
+      transition={{
+        duration: 0.45,
+        ease: [0.22, 1, 0.36, 1],
+        delay: delayMs / 1000,
+      }}
     >
       {children}
-    </div>
+    </m.div>
   );
 }

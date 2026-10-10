@@ -16,7 +16,7 @@ export async function GET(_request: Request, context: Ctx) {
   }
   const membership = await requireWeddingAccess(session.user.id, id);
   if (!membership) {
-    return NextResponse.json({ error: "Wedding not found." }, { status: 404 });
+    return NextResponse.json({ error: "Event not found." }, { status: 404 });
   }
 
   const wedding = await prisma.wedding.findUnique({ where: { id } });
