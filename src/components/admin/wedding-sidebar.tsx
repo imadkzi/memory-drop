@@ -2,8 +2,43 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HardDrive, Images, Link2, Settings, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+function GoogleDriveLogo({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 87.3 78"
+      className={className}
+      aria-hidden
+      focusable="false"
+    >
+      <path
+        fill="#0066da"
+        d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z"
+      />
+      <path
+        fill="#00ac47"
+        d="M43.65 25L29.9 1.2C28.55 2 27.4 3.1 26.6 4.5L1.2 48.25c-.8 1.4-1.2 2.95-1.2 4.5h27.5z"
+      />
+      <path
+        fill="#ea4335"
+        d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.85L73.55 76.8z"
+      />
+      <path
+        fill="#00832d"
+        d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z"
+      />
+      <path
+        fill="#2684fc"
+        d="M59.85 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z"
+      />
+      <path
+        fill="#ffba00"
+        d="M73.4 26.5l-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25 59.85 53h27.45c0-1.55-.4-3.1-1.2-4.5z"
+      />
+    </svg>
+  );
+}
 
 export function WeddingSidebar({
   weddingId,
@@ -20,70 +55,62 @@ export function WeddingSidebar({
   const base = `/admin/weddings/${weddingId}`;
 
   const items = [
-    { href: `${base}/media`, label: "Photos & Videos", icon: Images, key: "media" },
-    { href: `${base}/sharing`, label: "Link & Sharing", icon: Link2, key: "sharing" },
-    { href: `${base}/settings`, label: "Settings", icon: Settings, key: "settings" },
-    { href: `${base}/admins`, label: "Team", icon: Users, key: "admins" },
+    { href: `${base}/media`, label: "Photos & Videos", key: "media" },
+    { href: `${base}/sharing`, label: "Link & Sharing", key: "sharing" },
+    { href: `${base}/settings`, label: "Settings", key: "settings" },
+    { href: `${base}/admins`, label: "Team", key: "admins" },
   ] as const;
 
   return (
-    <aside className="flex w-full flex-col gap-4 md:sticky md:top-6 md:w-64 md:shrink-0">
-      <div className="rounded-2xl border border-ink/8 bg-white/90 p-5 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.28)]">
-        <p className="font-serif text-2xl tracking-tight text-ink">{weddingName}</p>
+    <aside className="flex w-full flex-col gap-3 md:sticky md:top-6 md:w-56 md:shrink-0">
+      <div className="border border-ink/10 bg-white p-5">
+        <div className="chapter-rule mb-3 bg-ink" />
+        <p className="font-serif text-2xl tracking-tight text-ink">
+          {weddingName}
+        </p>
         {subtitle ? (
-          <p className="mt-1 font-sans text-sm text-muted-foreground">{subtitle}</p>
+          <p className="mt-1 font-sans text-sm text-ink/55">{subtitle}</p>
         ) : null}
-      </div>
 
-      <nav className="rounded-2xl border border-ink/8 bg-white/90 p-2 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.2)]">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const active =
-            item.key === "media"
-              ? pathname.includes("/media") || pathname === base
-              : pathname.includes(`/${item.key}`);
-          return (
-            <Link
-              key={item.key}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 font-sans text-sm transition",
-                active
-                  ? "bg-bloom-soft font-medium text-bloom"
-                  : "text-ink/70 hover:bg-ink/5 hover:text-ink",
-              )}
-            >
-              <Icon className="size-4 shrink-0" strokeWidth={1.75} />
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
+        <nav className="mt-5 flex flex-col gap-0.5 border-t border-ink/10 pt-4">
+          {items.map((item) => {
+            const active =
+              item.key === "media"
+                ? pathname.includes("/media") || pathname === base
+                : pathname.includes(`/${item.key}`);
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                className={cn(
+                  "border-l-2 px-3 py-2 font-sans text-sm transition",
+                  active
+                    ? "border-bloom font-medium text-bloom"
+                    : "border-transparent text-ink/65 hover:border-ink/20 hover:text-ink",
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
       <Link
         href={`${base}/settings`}
-        className="rounded-2xl border border-ink/8 bg-white/90 p-4 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.2)] transition hover:border-ink/15 md:mt-auto"
+        className="flex items-center gap-3 border border-ink/10 bg-white px-4 py-3.5 transition hover:border-ink/20"
       >
-        <div className="flex items-center gap-3">
-          <div
+        <GoogleDriveLogo className="size-6 shrink-0" />
+        <div className="min-w-0">
+          <p className="font-sans text-sm font-medium text-ink">Google Drive</p>
+          <p
             className={cn(
-              "flex size-10 items-center justify-center rounded-lg",
-              driveConnected ? "bg-bloom-soft text-bloom" : "bg-ink/5 text-ink/45",
+              "mt-0.5 font-sans text-xs",
+              driveConnected ? "text-bloom" : "text-ink/45",
             )}
           >
-            <HardDrive className="size-5" strokeWidth={1.6} />
-          </div>
-          <div className="min-w-0">
-            <p className="font-sans text-sm font-medium text-ink">Google Drive</p>
-            <p
-              className={cn(
-                "truncate font-sans text-xs",
-                driveConnected ? "text-bloom" : "text-muted-foreground",
-              )}
-            >
-              {driveConnected ? "Connected" : "Not connected"}
-            </p>
-          </div>
+            {driveConnected ? "Connected" : "Not connected"}
+          </p>
         </div>
       </Link>
     </aside>

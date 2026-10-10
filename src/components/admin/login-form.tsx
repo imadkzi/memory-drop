@@ -78,7 +78,7 @@ export function LoginForm() {
         <p className="mt-2 font-sans text-sm text-muted-foreground">
           {mode === "login"
             ? "Sign in to your private collection"
-            : "Set up a private wedding collection"}
+            : "Set up a private event collection"}
         </p>
       </div>
 

@@ -23,13 +23,13 @@ export async function POST(request: Request) {
   }
   if (!wedding.uploadEnabled) {
     return NextResponse.json(
-      { error: "Uploads are temporarily closed for this wedding." },
+      { error: "Uploads are temporarily closed for this event." },
       { status: 403 },
     );
   }
   if (!wedding.driveConnectionId || !wedding.driveFolderId) {
     return NextResponse.json(
-      { error: "This wedding isn't ready to receive uploads yet." },
+      { error: "This event isn't ready to receive uploads yet." },
       { status: 503 },
     );
   }

@@ -30,19 +30,18 @@ export default async function WeddingAdminsPage({ params }: Props) {
   });
 
   return (
-    <div className="rounded-2xl border border-ink/8 bg-white/95 p-6 shadow-[0_12px_40px_-28px_rgba(40,20,20,0.25)] sm:p-8 lg:p-10">
-      <p className="font-sans text-[11px] tracking-[0.28em] text-bloom uppercase">
-        People
-      </p>
-      <h1 className="mt-3 font-serif text-4xl tracking-tight text-ink sm:text-5xl">
-        Team
-      </h1>
-      <p className="mt-4 max-w-xl font-sans text-base leading-relaxed text-muted-foreground">
-        Invite others with a private link. They create an account or sign in,
-        then accept to help manage this collection.
-      </p>
+    <div className="space-y-10">
+      <header className="border-b border-ink/10 pb-8">
+        <h1 className="font-serif text-4xl tracking-tight text-ink sm:text-5xl">
+          Team
+        </h1>
+        <p className="mt-3 max-w-xl font-sans text-base leading-relaxed text-ink/60">
+          Invite others with a private link. They create an account or sign in,
+          then accept to help manage this collection.
+        </p>
+      </header>
 
-      <div className="mt-10">
+      <div>
         <AdminManager
           weddingId={id}
           isOwner={membership.role === "OWNER"}

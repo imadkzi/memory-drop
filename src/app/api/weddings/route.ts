@@ -38,7 +38,7 @@ export async function POST(request: Request) {
   const body = await request.json();
   const parsed = createWeddingSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Please provide a valid wedding name." }, { status: 400 });
+    return NextResponse.json({ error: "Please provide a valid event name." }, { status: 400 });
   }
 
   const token = generateUploadToken();

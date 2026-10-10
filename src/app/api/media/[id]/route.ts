@@ -40,8 +40,8 @@ export async function DELETE(_request: Request, context: Ctx) {
       mediaId: id,
       error: error instanceof Error ? error.message : "unknown",
     });
-    // Keep metadata transition even if Drive delete fails after auth issues —
-    // mark deleted locally; admin can reconnect Drive later.
+    // Keep metadata transition even if Drive delete fails after auth issues.
+    // Mark deleted locally; admin can reconnect Drive later.
   }
 
   await prisma.media.update({

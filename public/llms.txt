@@ -1,0 +1,17 @@
+# Memory Drop
+
+> Private event photo and video collection. Guests upload through a link or QR code. Only the organisers and invited admins can view the gallery. Files land in the owner's Google Drive. Memory Drop does not provide Google storage or quota.
+
+## Site
+
+- Home: /
+- Privacy policy: /privacy
+- Terms: /terms
+- Guest demo: /upload/demo
+
+## Product notes
+
+- Guests: upload only (no gallery access, no accounts)
+- Admins: view, download, delete
+- Storage: connected Google Drive account (owner's quota)
+- Contact: hello@imadkazi.co.uk
