@@ -6,6 +6,10 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/). Versioning f
 
 ## [Unreleased]
 
+### Fixed
+
+- Link & Sharing can create a new guest link and QR when the saved upload token cannot be decrypted (for example after rotating `ENCRYPTION_KEY`). Previously shared links stop working. Non-owners are asked to have the owner create the new link.
+
 ## [0.1.2] — 2026-10-10
 
 Marketing redesign and SEO pass merged to main (`feat/redesign`), plus lightbox playback improvements from 0.1.1.

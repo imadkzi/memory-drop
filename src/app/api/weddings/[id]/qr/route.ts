@@ -4,8 +4,8 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth";
 import { prisma } from "@/lib/db/prisma";
 import { requireWeddingAccess } from "@/lib/auth/session";
-import { decryptSecret } from "@/lib/security/crypto";
-import { getEnv } from "@/lib/validation/env";
+import { tryDecryptSecret } from "@/lib/security/crypto";
+import { guestUploadUrl } from "@/lib/weddings/upload-token";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -22,11 +22,21 @@ export async function GET(_request: Request, context: Ctx) {
 
   const wedding = await prisma.wedding.findUnique({ where: { id } });
   if (!wedding?.encryptedUploadToken) {
-    return NextResponse.json({ error: "Guest link unavailable." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Guest link unavailable." },
+      { status: 404 },
+    );
   }
 
-  const token = decryptSecret(wedding.encryptedUploadToken);
-  const url = `${getEnv().NEXT_PUBLIC_APP_URL}/upload/${token}`;
+  const token = tryDecryptSecret(wedding.encryptedUploadToken);
+  if (!token) {
+    return NextResponse.json(
+      { error: "Create a new guest link from the sharing page." },
+      { status: 409 },
+    );
+  }
+
+  const url = guestUploadUrl(token);
   const dataUrl = await QRCode.toDataURL(url, {
     margin: 2,
     width: 512,

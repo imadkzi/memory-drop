@@ -2,9 +2,11 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { CopyUploadLink } from "@/components/admin/copy-upload-link";
 import { QrPanel } from "@/components/admin/qr-panel";
+import { ReplaceGuestLink } from "@/components/admin/replace-guest-link";
 import { requireSession, requireWeddingAccess } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
-import { decryptSecret } from "@/lib/security/crypto";
+import { tryDecryptSecret } from "@/lib/security/crypto";
+import { guestUploadUrl } from "@/lib/weddings/upload-token";
 import { getEnv } from "@/lib/validation/env";
 
 type Props = { params: Promise<{ id: string }> };
@@ -23,16 +25,16 @@ export default async function WeddingSharingPage({ params }: Props) {
   let qrDataUrl: string | null = null;
   let qrError: string | null = null;
 
-  try {
-    const token = decryptSecret(wedding.encryptedUploadToken);
-    uploadUrl = `${appUrl}/upload/${token}`;
+  const token = tryDecryptSecret(wedding.encryptedUploadToken);
+  if (token) {
+    uploadUrl = guestUploadUrl(token);
     qrDataUrl = await QRCode.toDataURL(uploadUrl, {
       margin: 2,
       width: 512,
       color: { dark: "#5c2a34", light: "#ffffff" },
     });
-  } catch {
-    qrError = "QR code unavailable.";
+  } else {
+    qrError = "Create a new guest link to show the code.";
   }
 
   return (
@@ -43,8 +45,8 @@ export default async function WeddingSharingPage({ params }: Props) {
           Link &amp; Sharing
         </h1>
         <p className="mt-3 max-w-xl font-sans text-base leading-relaxed text-ink/60">
-          Give your guests a simple, private way to share their photos and videos.
-          Pass the link or QR code; they can upload, then leave.
+          Give your guests a simple, private way to share their photos and
+          videos. Pass the link or QR code; they can upload, then leave.
         </p>
       </header>
 
@@ -58,16 +60,24 @@ export default async function WeddingSharingPage({ params }: Props) {
             can upload photos and videos directly to your collection.
           </p>
           <div className="mt-8">
-            <CopyUploadLink
-              weddingId={id}
-              initialUrl={uploadUrl}
-              fallbackLabel={`${appUrl}/upload/…`}
-            />
+            {uploadUrl ? (
+              <CopyUploadLink
+                weddingId={id}
+                initialUrl={uploadUrl}
+                fallbackLabel={`${appUrl}/upload/…`}
+              />
+            ) : (
+              <ReplaceGuestLink
+                weddingId={id}
+                canReplace={membership.role === "OWNER"}
+              />
+            )}
           </div>
         </section>
 
         <section className="border-t border-ink/10 pt-10 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
           <QrPanel
+            key={uploadUrl ?? "unavailable"}
             weddingId={id}
             initialDataUrl={qrDataUrl}
             initialError={qrError}

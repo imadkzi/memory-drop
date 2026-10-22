@@ -38,6 +38,7 @@ Work that should land before trusting the app with a real wedding / event day.
 - [x] Brand Drive root folder as `Memory Drop` for newly connected accounts
 - [x] Prefetch / cache large previews more aggressively for gallery + lightbox
 - [x] Lightbox photos use originals (with HEIC fallback); videos start via byte ranges
+- [x] Reissue the guest upload link and QR from Link & Sharing when the saved token cannot be decrypted
 
 ### Guest experience
 

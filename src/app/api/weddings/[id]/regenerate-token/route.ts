@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
 import { requireWeddingAccess } from "@/lib/auth/session";
-import { encryptSecret, generateUploadToken, hashUploadToken } from "@/lib/security/crypto";
-import { getEnv } from "@/lib/validation/env";
 import { logger } from "@/lib/logging/logger";
+import { guestUploadUrl, issueUploadToken } from "@/lib/weddings/upload-token";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -25,18 +23,9 @@ export async function POST(_request: Request, context: Ctx) {
     return NextResponse.json({ error: "Only the owner can regenerate the upload link." }, { status: 403 });
   }
 
-  const token = generateUploadToken();
-  await prisma.wedding.update({
-    where: { id },
-    data: {
-      uploadTokenHash: hashUploadToken(token),
-      encryptedUploadToken: encryptSecret(token),
-    },
-  });
-
-  logger.info("upload_token_regenerated", { weddingId: id, userId: session.user.id });
+  const token = await issueUploadToken(id, session.user.id);
 
   return NextResponse.json({
-    url: `${getEnv().NEXT_PUBLIC_APP_URL}/upload/${token}`,
+    url: guestUploadUrl(token),
   });
 }

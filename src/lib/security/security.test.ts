@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { generateUploadToken, hashUploadToken, encryptSecret, decryptSecret } from "@/lib/security/crypto";
+import { generateUploadToken, hashUploadToken, encryptSecret, decryptSecret, tryDecryptSecret } from "@/lib/security/crypto";
 import { checkRateLimit, resetRateLimits } from "@/lib/security/rate-limit";
 import { validateUploadFile } from "@/lib/validation/upload";
 
@@ -28,6 +28,8 @@ describe("secret encryption", () => {
     const encrypted = encryptSecret("refresh-token-value");
     expect(encrypted).not.toContain("refresh-token-value");
     expect(decryptSecret(encrypted)).toEqual("refresh-token-value");
+    expect(tryDecryptSecret(encrypted)).toEqual("refresh-token-value");
+    expect(tryDecryptSecret("not-a-payload")).toBeNull();
   });
 });
 

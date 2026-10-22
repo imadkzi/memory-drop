@@ -1,4 +1,9 @@
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+} from "crypto";
 import { getEnv } from "@/lib/validation/env";
 
 const ALGORITHM = "aes-256-gcm";
@@ -11,7 +16,10 @@ function keyFromEnv(): Buffer {
 export function encryptSecret(plaintext: string): string {
   const iv = randomBytes(IV_LENGTH);
   const cipher = createCipheriv(ALGORITHM, keyFromEnv(), iv);
-  const encrypted = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
+  const encrypted = Buffer.concat([
+    cipher.update(plaintext, "utf8"),
+    cipher.final(),
+  ]);
   const tag = cipher.getAuthTag();
   return `${iv.toString("hex")}:${tag.toString("hex")}:${encrypted.toString("hex")}`;
 }
@@ -21,13 +29,25 @@ export function decryptSecret(payload: string): string {
   if (!ivHex || !tagHex || !dataHex) {
     throw new Error("Invalid encrypted payload");
   }
-  const decipher = createDecipheriv(ALGORITHM, keyFromEnv(), Buffer.from(ivHex, "hex"));
+  const decipher = createDecipheriv(
+    ALGORITHM,
+    keyFromEnv(),
+    Buffer.from(ivHex, "hex"),
+  );
   decipher.setAuthTag(Buffer.from(tagHex, "hex"));
   const decrypted = Buffer.concat([
     decipher.update(Buffer.from(dataHex, "hex")),
     decipher.final(),
   ]);
   return decrypted.toString("utf8");
+}
+
+export function tryDecryptSecret(payload: string): string | null {
+  try {
+    return decryptSecret(payload);
+  } catch {
+    return null;
+  }
 }
 
 export function generateUploadToken(): string {
